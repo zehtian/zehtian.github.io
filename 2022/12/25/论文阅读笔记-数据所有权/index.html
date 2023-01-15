@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>论文阅读笔记(数据所有权系列) - 田泽豪的学习笔记</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="田泽豪的学习笔记"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="田泽豪的学习笔记"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本篇文章为数据所有权相关的论文笔记。包括数据集的IP认证(Dataset Inference)，DL模型的IP认证(IPGuard)和DL模型的知识蒸馏(Knowledge Distillation)。我们系统的介绍了这三种方法，同时在理论基础、实现方法、实验环境、实验内容和实验结果等方面进行了对比。"><meta property="og:type" content="blog"><meta property="og:title" content="论文阅读笔记(数据所有权系列)"><meta property="og:url" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/"><meta property="og:site_name" content="田泽豪的学习笔记"><meta property="og:description" content="本篇文章为数据所有权相关的论文笔记。包括数据集的IP认证(Dataset Inference)，DL模型的IP认证(IPGuard)和DL模型的知识蒸馏(Knowledge Distillation)。我们系统的介绍了这三种方法，同时在理论基础、实现方法、实验环境、实验内容和实验结果等方面进行了对比。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image002.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image003.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001-16719733906471.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image002-16719733906472.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image003-16719733906473.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001-16719736013934.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image002-16719736013935.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image003-16719736013946.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image004.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image005.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image006.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image007.png"><meta property="og:image" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image008.png"><meta property="article:published_time" content="2022-12-25T12:56:24.000Z"><meta property="article:modified_time" content="2022-12-26T06:44:03.073Z"><meta property="article:author" content="Zehao Tian"><meta property="article:tag" content="论文阅读笔记"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/"},"headline":"论文阅读笔记(数据所有权系列)","image":["http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image002.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image003.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001-16719733906471.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image002-16719733906472.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image003-16719733906473.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001-16719736013934.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image002-16719736013935.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image003-16719736013946.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image004.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image005.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image006.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image007.png","http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image008.png"],"datePublished":"2022-12-25T12:56:24.000Z","dateModified":"2022-12-26T06:44:03.073Z","author":{"@type":"Person","name":"Zehao Tian"},"publisher":{"@type":"Organization","name":"田泽豪的学习笔记","logo":{"@type":"ImageObject","url":{"text":"Blackpride"}}},"description":"本篇文章为数据所有权相关的论文笔记。包括数据集的IP认证(Dataset Inference)，DL模型的IP认证(IPGuard)和DL模型的知识蒸馏(Knowledge Distillation)。我们系统的介绍了这三种方法，同时在理论基础、实现方法、实验环境、实验内容和实验结果等方面进行了对比。"}</script><link rel="canonical" href="http://example.com/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Blackpride</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-12-25T12:56:24.000Z" title="2022/12/25 20:56:24">2022-12-25</time>发表</span><span class="level-item"><time dateTime="2022-12-26T06:44:03.073Z" title="2022/12/26 14:44:03">2022-12-26</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">论文阅读笔记</a></span><span class="level-item">16 分钟读完 (大约2364个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">论文阅读笔记(数据所有权系列)</h1><div class="content"><p>本篇文章为数据所有权相关的论文笔记。包括数据集的IP认证(Dataset Inference)，DL模型的IP认证(IPGuard)和DL模型的知识蒸馏(Knowledge Distillation)。我们系统的介绍了这三种方法，同时在理论基础、实现方法、实验环境、实验内容和实验结果等方面进行了对比。</p>
+ <span id="more"></span>
+
+
+
+<h2 id="Dataset-Inference"><a href="#Dataset-Inference" class="headerlink" title="Dataset Inference"></a><strong>Dataset Inference</strong></h2><p><strong>主要思想：</strong>提出了数据集推断，用来进行模型窃取攻击的防御，具体地，判断某一可疑模型是否使用了目标模型的部分隐私数据，来进行模型的训练。</p>
+<p><strong>具体步骤：</strong>（其中Embedding特征值的计算就是点到决策边界的距离计算）</p>
+<p>1.将受害者的私有数据集和公有数据集进行标记：Sv-&gt;b&#x3D;0; S-&gt;b&#x3D;1</p>
+<p>2.任取部分受害者的私有数据和公有数据，进行fv下Embedding特征值的计算。并将特征值作为输入x，对应的成员标签(b)作为y，训练回归模型gv(类似于成员推断攻击的二分类模型，只不过加了一个评分，同时修改了损失函数使得成员数据对应的评分小)。该回归模型gv的作用：给定一个样本在可疑模型 F 计算的特征值，模型输出一个概率(认为该条数据包含fv隐私信息的置信度)</p>
+<p>（Embedding特征值的计算：提出了白盒和黑盒两种，但不够精细化）</p>
+<p>3.进行假设检验HypothesisTesting。取m条受害者的私有数据和公有数据，计算可疑模型fA*下的Embedding特征值，并传入gv计算置信度，将m个数据的置信度构成向量c&#x3D;(c0…cm)和cv。检验无效假设H0:μ&lt;μv，计算p值，通过设定阈值α，若p＜α，则H0被拒绝，模型被盗。</p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001.png"></p>
+<p><strong>实验环境：</strong></p>
+<p>Datasets - Target Models</p>
+<p>CIFAR10 – WRD-28-10</p>
+<p>CIFAR100 – WRD-28-10  </p>
+<p><strong>攻击方式：</strong></p>
+<p>①模型提取，预测向量的访问；(Model exaction using unlabeled data and victim confidence)</p>
+<p>②模型提取，仅使用标签；(Model exaction using unlabeled data and victim labels)</p>
+<p>③访问数据集，提取受害者模型；(Data distillation)</p>
+<p>④访问数据集，重新训练自己的模型；(Different model)</p>
+<p>⑤对受害者模型进行微调；(Fine tuning)</p>
+<p>⑥对受害者模型进行无数据蒸馏；(Data-free distillation&#x2F;Zero shot learning)</p>
+<p>⑦独立模型（对比实验）。(Train a teacher model on a separate dataset)</p>
+<p><strong>生成对抗样本的方式：</strong></p>
+<p>①White ②Black</p>
+<p><strong>评价指标：</strong></p>
+<p>①Δμ &#x3D; μ – μv：置信度均值之差</p>
+<p>②p-value：无效假设H发生概率；</p>
+<p><strong>实验内容：</strong>（1 2为正文, 3 4 5为附录）</p>
+<p>1.数据集推断整体性能评估：固定m，计算每种攻击下的Δμ和p-value值。</p>
+<p>（攻击①-⑦; CIFAR10&#x2F;CIFAR100; Black&#x2F;White; m&#x3D;10）</p>
+<p>2.检验所需样本个数m对数据集推断的影响：改变m，计算p-value的变化。</p>
+<p>（攻击①-⑥; CIFAR10&#x2F;CIFAR100; Black&#x2F;White; m&#x3D;0-50）</p>
+<p>3.生成距离特征size大小（也就是计算该点到<strong>几条</strong>决策边界的距离）对数据集推断的影响：改变Embedding Size，计算p-value的变化。（攻击①-⑥; CIFAR10&#x2F;CIFAR100; Black; m&#x3D;15&#x2F;30&#x2F;45&#x2F;60&#x2F;75&#x2F;90）</p>
+<p>4.补充了另外两个数据集（SVHN&#x2F;Imagenet）的实验整体性能表：固定m，计算每种攻击下的Δμ和p-value值。（SVHN:攻击①-⑦; Imagenet:攻击③-④; Black; m&#x3D;10）</p>
+<p>5.双方私有数据集重叠对性能影响（作为一种新的攻击方式）：改变fraction overlap，计算p-value的变化。（SVHN; Black; m&#x3D;10; fraction overlap&#x3D;0.0&#x2F;0.3&#x2F;0.5&#x2F;0.7&#x2F;1.0）</p>
+<p><strong>整体性能：</strong></p>
+<p>(实验1)         CIFAR10-WRD-28-10       CIFAR100 – WRD-28-10</p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image002.png"></p>
+<p>(实验4)               ImageNet</p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image003.png"></p>
+<h2 id="IPGuard"><a href="#IPGuard" class="headerlink" title="IPGuard"></a><strong>IPGuard</strong></h2><p><strong>主要思想：</strong>提出了IPGuard，用来保护深度网络的知识产权。具体地，判断某一可疑模型是否是目标模型的后处理版本（盗版）。</p>
+<p><strong>具体步骤：</strong>（其中footprint的生成就需要使用对抗样本技术）</p>
+<p>1.取n个点，随机&#x2F;就近取一条决策边界作为target label，采用优化方式生成对抗样本，将这些对抗样本（nearest samples）和他们对应的标签（target label）作为footprint；</p>
+<p>（优化方法为： <img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001-16719733906471.png">，需要白盒条件且不够精细化）</p>
+<p>2.生成多种可疑模型，包括阳性（盗版）和阴性（正常）模型，将模型对nearest samples进行预测，与target label进行比较，计算匹配率。</p>
+<p><strong>实验环境：</strong></p>
+<p>Datasets - Target Models</p>
+<p>CIFAR10 – ResNet20</p>
+<p>CIFAR100 – WRN-22-4</p>
+<p>Imagenet – ResNet50</p>
+<p><strong>攻击方式：</strong></p>
+<p>1.阳性模型</p>
+<p>①微调最后一层全连接层；(Fine-tune last layer)</p>
+<p>②微调所有层；(Fine-tune all layer)</p>
+<p>③重新训练最后一层；(Retrain last layer)</p>
+<p>④重新训练所有层；(Retrain all layer)</p>
+<p>⑤权重修剪；(Weight pruning)</p>
+<p>⑥过滤器修剪；(Filter pruning)</p>
+<p>2.阴性模型</p>
+<p>⑦同结构模型；（同结构不同初始化）</p>
+<p>⑧不同结构模型；</p>
+<p>⑨随机森林模型。</p>
+<p><strong>生成对抗样本的方式：</strong></p>
+<p>①初始化样本：随机&#x2F;选训练集数据 ②找target label：随机&#x2F;取最近的 </p>
+<p>③对抗攻击：Random&#x2F;FGSM&#x2F;IGSM&#x2F;CW&#x2F;IPGuard</p>
+<p><strong>评价指标：</strong></p>
+<p>①匹配率：得到模型预测输出后，可疑模型预测数据点与目标分类器预测数据点标签匹配的分数。（阳性模型的分数高，阴性模型的分数低）</p>
+<p>②ARUC：鲁棒性与唯一性曲线围成的面积。其中：阳性模型的匹配率代表鲁棒性，阴性模型的匹配率代表唯一性。</p>
+<p>③测试准确率：模型的测试准确率。</p>
+<p><strong>实验内容：</strong>（只有正文）</p>
+<p>1.各种模型的测试准确率；（目标模型+可疑模型）</p>
+<p>2.整体性能情况：所有情况下最优参数对应的ARUC的值；</p>
+<p>（CIFAR10&#x2F;CIFAR100&#x2F;ImageNet; Random&#x2F;FGSM&#x2F;IGSM&#x2F;CW&#x2F;IPGuard）</p>
+<p>3.整体性能情况：各种攻击方式和各种对抗样本生成方式下，匹配率的值；</p>
+<p>（攻击①-⑨; CIFAR10&#x2F;CIFAR100&#x2F;ImageNet; FGSM&#x2F;IGSM&#x2F;CW&#x2F;IPGuard）</p>
+<p>4.FGSM、IGSM、CW对抗攻击中超参数对ARUC的影响。我们应该讨论我们方法超参数的影响；</p>
+<p>5.不同数据集下，不同对抗攻击方法需要的时间；</p>
+<p>（Random&#x2F;CIFAR10&#x2F;CIFAR100&#x2F;ImageNet; FGSM&#x2F;IGSM&#x2F;CW&#x2F;IPGuard; n&#x3D;100）</p>
+<p><strong>整体性能：</strong></p>
+<p>（实验三） CIFAR10-ResNet20              CIFAR100-WRN-22-4</p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image002-16719733906472.png"></p>
+<p>（实验三）  ImageNet-ResNet50              （实验二）实验三是计算的匹配率，实验二是ARUC</p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image003-16719733906473.png"></p>
+<h2 id="Knowledge-Distillation"><a href="#Knowledge-Distillation" class="headerlink" title="Knowledge Distillation"></a><strong>Knowledge Distillation</strong></h2><p><strong>主要思想：</strong>利用对抗性攻击来发现支持决策边界的样本，从而实现知识蒸馏。具体的，提出了一种对抗攻击方法（类似deepfool），在决策边界处得到对抗样本（BSSs），使得知识蒸馏后的模型决策边界能够接近原本的模型分类边界。</p>
+<p><strong>具体步骤：</strong>（其中BSSs的生成就需要使用对抗样本技术）</p>
+<p>1.挑选N个原始点（base sample）以及对应的对抗标签（target label）。1）样本选择方法：选出能够被teacher和student均预测为该类的样本，个数为C，若C小于N，则用这C个样本，若C大于N，则在C中选出teacher与student预测概率相差最大的N个样本；2）标签选择方法：选取距离该样本最近的决策边界。</p>
+<p>2.进行对抗攻击生成BSSs。方法为：优化损失函数，并进行更新，类似Deepfool。</p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image001-16719736013934.png"></p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image002-16719736013935.png"></p>
+<p>其中b为原始class，k为目标class。</p>
+<p>3.设计模型蒸馏损失函数，进行模型蒸馏，优化student。其中J为entropy function：J(a; b) &#x3D;- aTlogb。</p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image003-16719736013946.png"></p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image004.png"></p>
+<p><strong>实验环境：</strong></p>
+<p>Datasets <strong>–</strong> Target Models(Teacher) <strong>–</strong> Student </p>
+<p>CIFAR10 <strong>–</strong> ResNet26 <strong>–</strong> ResNet8 ResNet14 ResNet20</p>
+<p>ImageNet <strong>–</strong> ResNet32 <strong>–</strong> ResNet8</p>
+<p>Tiny ImageNet <strong>–</strong> ResNet42 <strong>–</strong> ResNet10</p>
+<p><strong>攻击方式：</strong></p>
+<p>知识蒸馏Knowledge distillation。</p>
+<p>蒸馏方式：Proposed和FSP + Proposed，还有一些对比实验（Original&#x2F;Hinton）。</p>
+<p><strong>生成对抗样本的方式：</strong></p>
+<p>见具体步骤1.</p>
+<p>对抗攻击：Baseline&#x2F;Random&#x2F;noise L2 minimize&#x2F;FGSM&#x2F;DeepFool&#x2F;Proposed</p>
+<p><strong>评价指标：</strong></p>
+<p>①测试准确率：模型的测试准确率。</p>
+<p>②蒸馏后得到的student的决策边界与teacher决策边界的相似度：MagSim和AngSim。</p>
+<p><strong>实验内容：</strong>（只有正文）</p>
+<p>1.整体性能情况：不同方法蒸馏后的student测试准确率对比； </p>
+<p>（CIFAR10&#x2F;ImageNet&#x2F;Tiny; Proposed&#x2F;FSP + Proposed；BSSs）</p>
+<p>2.对抗样本对知识蒸馏的影响；</p>
+<p>（CIFAR10; Baseline&#x2F;Random&#x2F;noise L2 minimize&#x2F;FGSM&#x2F;DeepFool&#x2F;Proposed）</p>
+<p>3.不同方法下的相似度情况；</p>
+<p>（CIFAR10; DSSs; Original&#x2F;Hinton&#x2F;Proposed）</p>
+<p>4.超参数的影响（选取样本个数、选取方式等）；</p>
+<p><strong>整体性能：</strong></p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image005.png"></p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image006.png"></p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image007.png"></p>
+<p><img src="/2022/12/25/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E6%89%80%E6%9C%89%E6%9D%83/clip_image008.png"></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>论文阅读笔记(数据所有权系列)</p><p><a href="http://example.com/2022/12/25/论文阅读笔记-数据所有权/">http://example.com/2022/12/25/论文阅读笔记-数据所有权/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Zehao Tian</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2022-12-25</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2022-12-26</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">论文阅读笔记</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2023/01/06/%E8%81%94%E9%82%A6%E5%AD%A6%E4%B9%A0%E4%B8%80/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">联邦学习（一）</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/12/25/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/"><span class="level-item">机器学习优化方法讲解</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="https://octodex.github.com/images/codercat.jpg" alt="田泽豪"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">田泽豪</p><p class="is-size-6 is-block">越努力，越幸运</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HUST</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">19</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">6</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">9</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zehtian" target="_blank" rel="noopener">关注我</a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Dataset-Inference"><span class="level-left"><span class="level-item">1</span><span class="level-item">Dataset Inference</span></span></a></li><li><a class="level is-mobile" href="#IPGuard"><span class="level-left"><span class="level-item">2</span><span class="level-item">IPGuard</span></span></a></li><li><a class="level is-mobile" href="#Knowledge-Distillation"><span class="level-left"><span class="level-item">3</span><span class="level-item">Knowledge Distillation</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://hexo.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Hexo</span></span><span class="level-right"><span class="level-item tag">hexo.io</span></span></a></li><li><a class="level is-mobile" href="https://bulma.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Bulma</span></span><span class="level-right"><span class="level-item tag">bulma.io</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/java/"><span class="level-start"><span class="level-item">java</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/web%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">web基础</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">机器学习</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">编程基础</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="level-start"><span class="level-item">论文写作</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="level-start"><span class="level-item">论文阅读笔记</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-14T09:53:15.000Z">2023-01-14</time></p><p class="title"><a href="/2023/01/14/java%E5%9F%BA%E7%A1%80%E5%85%AD/">java基础六</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-14T09:53:04.000Z">2023-01-14</time></p><p class="title"><a href="/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/">java基础（五）</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-14T09:52:54.000Z">2023-01-14</time></p><p class="title"><a href="/2023/01/14/java%E5%9F%BA%E7%A1%80%E5%9B%9B/">java基础（四）</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-12T14:03:36.000Z">2023-01-12</time></p><p class="title"><a href="/2023/01/12/java%E5%9F%BA%E7%A1%80%E4%B8%89/">java基础（三）</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-12T14:03:24.000Z">2023-01-12</time></p><p class="title"><a href="/2023/01/12/java%E5%9F%BA%E7%A1%80%E4%BA%8C/">java基础（二）</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">9</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/html/"><span class="tag">html</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/java/"><span class="tag">java</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/python/"><span class="tag">python</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%85%83%E5%AD%A6%E4%B9%A0/"><span class="tag">元学习</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%88%90%E5%91%98%E6%8E%A8%E6%96%AD%E6%94%BB%E5%87%BB/"><span class="tag">成员推断攻击</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/"><span class="tag">机器学习基础</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%81%94%E9%82%A6%E5%AD%A6%E4%B9%A0/"><span class="tag">联邦学习</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="tag">论文写作</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="tag">论文阅读笔记</span><span class="tag">3</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Blackpride</a><p class="is-size-7"><span>&copy; 2023 Zehao Tian</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

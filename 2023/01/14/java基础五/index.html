@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>java基础（五） - 田泽豪的学习笔记</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="田泽豪的学习笔记"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="田泽豪的学习笔记"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本系列主要进行java语言的介绍，其中本篇文章介绍java的高级特性（中），主要介绍集合相关内容。java集合可分为Collection和Map两种体系。Collection接口：单列集合，存储一个一个的对象。其中包括List接口和Set接口；Map接口：双列集合，用来存储一对（key-value）一对的数据。"><meta property="og:type" content="blog"><meta property="og:title" content="java基础（五）"><meta property="og:url" content="http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/"><meta property="og:site_name" content="田泽豪的学习笔记"><meta property="og:description" content="本系列主要进行java语言的介绍，其中本篇文章介绍java的高级特性（中），主要介绍集合相关内容。java集合可分为Collection和Map两种体系。Collection接口：单列集合，存储一个一个的对象。其中包括List接口和Set接口；Map接口：双列集合，用来存储一对（key-value）一对的数据。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image001.png"><meta property="og:image" content="http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image002.png"><meta property="og:image" content="http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image003.png"><meta property="og:image" content="http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image004.png"><meta property="article:published_time" content="2023-01-14T09:53:04.000Z"><meta property="article:modified_time" content="2023-01-15T13:26:41.961Z"><meta property="article:author" content="Zehao Tian"><meta property="article:tag" content="java"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image001.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/"},"headline":"java基础（五）","image":["http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image001.png","http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image002.png","http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image003.png","http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image004.png"],"datePublished":"2023-01-14T09:53:04.000Z","dateModified":"2023-01-15T13:26:41.961Z","author":{"@type":"Person","name":"Zehao Tian"},"publisher":{"@type":"Organization","name":"田泽豪的学习笔记","logo":{"@type":"ImageObject","url":{"text":"Blackpride"}}},"description":"本系列主要进行java语言的介绍，其中本篇文章介绍java的高级特性（中），主要介绍集合相关内容。java集合可分为Collection和Map两种体系。Collection接口：单列集合，存储一个一个的对象。其中包括List接口和Set接口；Map接口：双列集合，用来存储一对（key-value）一对的数据。"}</script><link rel="canonical" href="http://example.com/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Blackpride</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-01-14T09:53:04.000Z" title="2023/1/14 17:53:04">2023-01-14</time>发表</span><span class="level-item"><time dateTime="2023-01-15T13:26:41.961Z" title="2023/1/15 21:26:41">2023-01-15</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/java/">java</a></span><span class="level-item">20 分钟读完 (大约2996个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">java基础（五）</h1><div class="content"><p>本系列主要进行java语言的介绍，其中本篇文章介绍java的高级特性（中），主要介绍集合相关内容。java集合可分为Collection和Map两种体系。Collection接口：单列集合，存储一个一个的对象。其中包括List接口和Set接口；Map接口：双列集合，用来存储一对（key-value）一对的数据。</p>
+<span id="more"></span>
+
+
+
+<p>java集合可分为Collection和Map两种体系。</p>
+<p>1.Collection接口：单列集合，存储一个一个的对象</p>
+<p>​    1.1 List接口，存储有序的、可重复的数据；</p>
+<p>​         如：<strong>ArrrayList</strong>、<strong>LinkedList</strong>、Vector</p>
+<p>​    1.2 Set接口，存储无序的、不可重复的数据；</p>
+<p>​         如：HashSet、 LinkedHashSet、TreeSet </p>
+<p>2.Map接口：双列集合，用来存储一对（key-value）一对的数据。</p>
+<p>​        如：<strong>HashMap</strong>、LinkedHashMap、TreeMap</p>
+<h2 id="Collection接口"><a href="#Collection接口" class="headerlink" title="Collection接口"></a><strong>Collection接口</strong></h2><h4 id="Collection接口中的常用方法"><a href="#Collection接口中的常用方法" class="headerlink" title="Collection接口中的常用方法"></a><strong>Collection接口中的常用方法</strong></h4><p>新建一个Collection接口对象。如：Collection coll1 &#x3D; new ArrayList()</p>
+<ol>
+<li><p>add(Object e)：将元素e添加到集合中；</p>
+</li>
+<li><p>addAll(Collection coll)：将集合coll中的元素添加到该集合中；</p>
+</li>
+<li><p>size()：获取添加元素的个数；</p>
+</li>
+<li><p>clear()：清空集合元素；</p>
+</li>
+<li><p>isEmpty()：判断当前集合是否为空；</p>
+</li>
+<li><p>contains(Object e)：判断集合中是否存在元素e；–containsAll同理</p>
+</li>
+<li><p>remove(Object e)：删除一个元素e，并返回是否删除成功；–removeAll同理</p>
+</li>
+<li><p>retrainAll(Collection coll)：求集合交集，并将结果返回在原集合中；</p>
+</li>
+<li><p>equals(Object e)：返回与e是否相等，要想返回true，e首先得是Collection；</p>
+</li>
+<li><p>toArray(Collection coll)：集合转化为数组。</p>
+</li>
+</ol>
+<p>注意：向Collection接口的实现类的对象中添加数据obj时，要求obj所在类重写equals()。  </p>
+<h4 id="集合Collection的遍历"><a href="#集合Collection的遍历" class="headerlink" title="集合Collection的遍历"></a><strong>集合Collection的遍历</strong></h4><p><strong>使用Iterator迭代器遍历集合Collection[主要是List]：</strong>使用hasNext()和next()</p>
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Collection</span> <span class="variable">coll</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ArrayList</span>();</span><br><span class="line"><span class="type">Iterator</span> <span class="variable">iter</span> <span class="operator">=</span> coll.interator();</span><br><span class="line"><span class="keyword">while</span>(iter.hasNext()):</span><br><span class="line">	System.out.println(iter.next()); <span class="comment">//打印当前集合中的对应元素</span></span><br></pre></td></tr></table></figure>
+
+<p>注意：1. 可以想象有一个指针，iter最先指向空，hasNext()判断下一个元素有没有值，如果有，则使用next()先将指针移动到下一个元素，然后返回指向元素的值。</p>
+<ol start="2">
+<li><p>Iterator仅用于遍历集合，本身没有承装对象的能力。如果需要创建Iterator对象，则必须有一个被迭代的集合；</p>
+</li>
+<li><p>集合对象每次调用iterator()方法都得到一个全新的迭代器对象，默认指针都在第一个元素之前（即空）；</p>
+</li>
+<li><p>iter.remove()：可以在遍历的时候，对集合的元素进行移除操作。</p>
+</li>
+</ol>
+<p><strong>foreach遍历集合和数组：</strong>（jdk5.0新增）</p>
+<p>格式：for(集合中元素类型 局部变量 : 集合对象){ … }</p>
+<p>如：for(Object obj : coll){</p>
+<p>​             System.out.println(obj);  &#x2F;&#x2F;其实obj内部调用的还是迭代器</p>
+<p>​       }</p>
+<h3 id="List接口"><a href="#List接口" class="headerlink" title="List接口"></a><strong>List接口</strong></h3><p><strong>List接口：</strong>存储有序的、可重复的数组–&gt;”动态”数组，可替换原有数组</p>
+<ol>
+<li>ArrayList：List接口的主要实现类；线程不安全的，效率高；底层使用Object[] elementData存储；</li>
+<li>LinkedList：底层使用双向链表存储；对于频繁的插入和删除操作，此类效率更高；</li>
+<li>Vector：List接口的远古实现类；线程安全的，效率低；底层使用Object[] elementData存储</li>
+</ol>
+<h4 id="ArrayList类"><a href="#ArrayList类" class="headerlink" title="ArrayList类"></a><strong>ArrayList类</strong></h4><p><strong>ArrayList源码分析：</strong></p>
+<p>1.jdk 7情况下：</p>
+<p>ArrayList list &#x3D; new ArrayList();  &#x2F;&#x2F;底层创建了长度是10的object[]数组elementData</p>
+<p>list.add(123);  &#x2F;&#x2F;elementData[e] &#x3D; new Integer(123);</p>
+<p>…</p>
+<p>list.add(11);  &#x2F;&#x2F;如果此次的添加导致底层elementData数组容量不够，则扩容。</p>
+<p>默认情况下，扩容为原来的容量的1.5倍，同时需要将原有数组中的数据复制到新的数组中。</p>
+<p>结论：建议开发中使用带参的构造器：ArrayList list &#x3D; new ArrayList(int capacity)</p>
+<p>2.jdk 8中ArrayList的变化:</p>
+<p>ArrayList list &#x3D; new ArrayList(); &#x2F;&#x2F;底层object[] elementData初始化为{}，并没有创建长度为10的数组</p>
+<p>list.add(123); &#x2F;&#x2F;<strong>第一次调用add()时，底层才创建了长度10的数组</strong>，并将数据123添加到elementData中</p>
+<p>后续的添加和扩容操作与jdk 7无异。</p>
+<p>3.小结：jdk7中的ArrayList的对象的创建类似于单例的饿汉式，而jdk8中的ArrayList的对象的创建类似于单例的懒汉式,延迟了数组的创建，节省内存。</p>
+<h4 id="LinkedList类"><a href="#LinkedList类" class="headerlink" title="LinkedList类"></a><strong>LinkedList类</strong></h4><p><strong>LinkedList源码分析：</strong></p>
+<p>LinkedList list &#x3D; new LinkedList(); &#x2F;&#x2F; 内部声明了Node类型的first和last属性，默认值null</p>
+<p>list.add(123);&#x2F;&#x2F;将123封装到Node中，创建了Node对象。</p>
+<p>其中，Node的定义体现了LinkedList的双向链表的说法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span>&lt;E&gt; &#123;</span><br><span class="line">	E item;</span><br><span class="line">	Node&lt;E&gt;next;</span><br><span class="line">	Node&lt;E&gt;prev;</span><br><span class="line">	Node(Node&lt;E&gt; prev, E eLement, Node&lt;E&gt; next) &#123;</span><br><span class="line">		<span class="built_in">this</span>.item = element;</span><br><span class="line">		<span class="built_in">this</span>.next = next;</span><br><span class="line">		<span class="built_in">this</span>.prev = prev;</span><br><span class="line">&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="List接口中常用方法："><a href="#List接口中常用方法：" class="headerlink" title="List接口中常用方法："></a><strong>List接口中常用方法：</strong></h4><p><img src="/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image001.png"></p>
+<h3 id="Set接口"><a href="#Set接口" class="headerlink" title="Set接口"></a><strong>Set接口</strong></h3><p><strong>Set接口：</strong>存储<strong>无序的、不可重复</strong>的数组–&gt;高中讲的”集合”</p>
+<p>HashSet：Set接口的主要实现类；线程不安全的；可以存储null值；</p>
+<p>LinkedHashSet：作为HashSet的子类；遍历其内部数据时，可以按照添加的顺序遍历；在添加数据的同时，每个数据还维护了两个引用，记录此数据的前一个数据和后一个数据；（类似于添加了链表的功能）</p>
+<p>TreeSet：可以按照添加对象的指定属性，进行排序。</p>
+<ul>
+<li>Set接口没有单独定义方法，均是Collection中定义过的方法；</li>
+<li>向Set中添加的数据，其所在的类一定要重写hashCode()和equals()方法；</li>
+<li>hashCode()和equals()还需要保持一致性。</li>
+</ul>
+<p>以HashSet为例说明:</p>
+<ol>
+<li><p>无序性：不等于随机性。<strong>存储的数据在底层数组中并非按照数组索引的顺序添加，而是根据数据的哈希值进行添加；</strong></p>
+</li>
+<li><p>不可重复性：保证添加的元素按照equals()判断时，不能返回true。即：相同的元素只能添加一个。</p>
+</li>
+</ol>
+<p><strong>添加元素的过程：</strong>（以HashSet为例说明）</p>
+<p>我们向HashSet中添加元素a，首先调用元素a所在类的hashcode()方法，计算元素a的哈希值，此哈希值接着通过某种算法计算出在HashSet底层数据中的存放位置（即为索引位置），判断数组此位置上是否有元素：</p>
+<p>​          如果此位置上没有其他元素，则a添加成功；     —&gt; 情况一</p>
+<p>​          如果此位置上有其它元素b（或以链表形式存在的多个元素），则比较元素a与元素b的hash值：</p>
+<p>​                   如果hash值不同，则元素a添加成功；      —&gt;情况二</p>
+<p>​                   如果hash值相同，进而需要调用元素a所在类的equals()方法：</p>
+<p>​                             equals() 返回true，元素a添加失败；</p>
+<p>​                             equals() 返回false，元素a添加成功。       —&gt;情况三</p>
+<p>对于添加成功的情况二和情况三而言，元素a与已经存在指定索引位置上的数据以链表的方式存储。</p>
+<p>Jdk7：元素a放到数组中，指向原来的元素</p>
+<p>Jdk8：原来的元素在数组中，指向元素a</p>
+<p>HashSet底层：数组+链表</p>
+<p><strong>TreeSet：</strong>可以按照添加对象的指定属性，进行排序</p>
+<ul>
+<li>向TreeSet中添加数据，需要保证是相同类的对象；</li>
+<li>两种排序方式：自然排序（实现comparable接口）和定制排序（Comparator类）；</li>
+<li>自然排序时，比较两个对象相同的标准为：compareTo()返回0，而不是equals()；</li>
+<li>定制排序时，比较两个对象相同的标准为：compare()返回0，而不是equals()</li>
+</ul>
+<h2 id="Map接口"><a href="#Map接口" class="headerlink" title="Map接口"></a><strong>Map接口</strong></h2><p><strong>Map接口：</strong>双列数据，用来存储一对（key-value）一对的数据。</p>
+<ol>
+<li><p>HashMap：作为Map的主要实现类；线程不安全的，效率高；可以存储null的key和value；LinkedHashMap：保证遍历map元素时，可以按照添加的顺序实现遍历；在原有的HashMap底层结构的基础上，添加了一对指针，指向前一个和后一个元素；对于频繁的遍历操作，执行效率要高于HashMap；底层使用红黑树；</p>
+</li>
+<li><p>TreeMap：可以按照添加的key-value对进行排序，实现排序遍历，此时考虑key的自然排序或定制排序；</p>
+</li>
+<li><p>Hashtable：Map的古老实现类；线程安全的，效率低；不可以存储null的key和value；</p>
+<p>Properties：常用来处理配置文件，key和value都为String类型。</p>
+</li>
+</ol>
+<p><strong>Map结构的理解：</strong></p>
+<ul>
+<li>key是无序的、不可重复的，使用Set存储所有的key； —&gt;key所在的类要重写equals()和hashCode()</li>
+<li>value是无序的、可重复的，使用Collection存储所有的value； —&gt;value所在的类要重写equals()</li>
+<li>一个键值对：key-value构成了一个Entry对象，使用Set存储所有的Entry</li>
+</ul>
+<h3 id="HashMap类"><a href="#HashMap类" class="headerlink" title="HashMap类"></a><strong>HashMap类</strong></h3><p>HashMap的底层结构：数组+链表（jdk7之前）</p>
+<p>数组+链表+红黑树（jdk8之后）</p>
+<p><strong>HashMap原理：jdk7</strong></p>
+<p>HashMap map &#x3D; new HashMap()：</p>
+<p>在实例化以后，底层了创建了一个长度是16的一维数组Entry[] table</p>
+<p>…可能执行了多个put…</p>
+<p>map.put(key1, value1)：</p>
+<p>首先调用key1所在类的hashcode()计算key1的哈希值，此哈希值接着通过某种算法计算以后，得到在Entry数组中的存放位置。判断数组此位置上是否有元素：</p>
+<p>​      如果此位置上的数据为空，则key1-value1添加成功；     —&gt; 情况一</p>
+<p>​      如果此位置上的数据不为空（意味着存在一个或多个数据（以链表形式存在）），则比较key1与已经存在元素的hash值：</p>
+<p>​               如果hash值都不同，则key1-value1添加成功；      —&gt;情况二</p>
+<p>​               如果key1的hash值与已经存在的某一个元素key2-value2相同，则比较equals()方法：</p>
+<p>​                      equals() 返回true，使用value1替换value2；</p>
+<p>​                      equals() 返回false，元素a添加成功。       —&gt;情况三</p>
+<p>对于添加成功的情况二和情况三，此时key1-value1与已经存在指定索引位置上的数据以链表的方式存储。</p>
+<p>在不断的添加过程中，会存在扩容问题，默认的扩容方式：扩容为原来的两倍，并将数据复制。</p>
+<p><strong>HashMap原理：jdk8</strong></p>
+<p>jdk8相较于jdk7在底层实现方面的不同:</p>
+<ol>
+<li>new HashMap()：底层没有创建一个长度为16的数组；</li>
+<li>jdk 8底层的数组是：Node[]，而非Entry[]；</li>
+<li>首次调用put()方法时，底层创建长度为16的数组；</li>
+<li>jdk7底层结构只有：数组+链表。jdk8中底层结构：数组+链表+红黑树；</li>
+<li>当数组的某一个索引上的元素以链表形式存在的个数&gt;8，且当前数组的长度&gt;64时，此时此索引位置上的数据改为红黑树存储。</li>
+</ol>
+<h3 id="Map的常用方法"><a href="#Map的常用方法" class="headerlink" title="Map的常用方法"></a>Map的常用方法</h3><p><img src="/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image002.png"></p>
+<p>遍历所有的key集：keySet</p>
+<p>Map map &#x3D; new HashMap();</p>
+<p>…..多次put….</p>
+<p>Set set &#x3D; map.keySet();</p>
+<p>Iterator iter &#x3D; set.iterator();</p>
+<p>while(iter.hasNext()):</p>
+<p>System.out.println(iter.next());}</p>
+<p>遍历所有的value集：values()</p>
+<p>Collection values &#x3D; map.values();</p>
+<p>for(Object obj : values):</p>
+<p>System.out.println(obj);}</p>
+<h2 id="Collections工具类"><a href="#Collections工具类" class="headerlink" title="Collections工具类"></a><strong>Collections工具类</strong></h2><p><strong>Collections工具类：可以操作Collection和Map的工具类</strong></p>
+<p><img src="/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image003.png"></p>
+<p><img src="/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/clip_image004.png"></p>
+<p>使用方法：如 List list &#x3D; new Arraylist();</p>
+<p>​              ….多次add…..</p>
+<p>​              Collections.reverse(list);</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>java基础（五）</p><p><a href="http://example.com/2023/01/14/java基础五/">http://example.com/2023/01/14/java基础五/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Zehao Tian</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2023-01-14</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2023-01-15</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/java/">java</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2023/01/14/java%E5%9F%BA%E7%A1%80%E5%85%AD/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">java基础六</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2023/01/14/java%E5%9F%BA%E7%A1%80%E5%9B%9B/"><span class="level-item">java基础（四）</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="https://octodex.github.com/images/codercat.jpg" alt="田泽豪"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">田泽豪</p><p class="is-size-6 is-block">越努力，越幸运</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HUST</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">19</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">6</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">9</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zehtian" target="_blank" rel="noopener">关注我</a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Collection接口"><span class="level-left"><span class="level-item">1</span><span class="level-item">Collection接口</span></span></a><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#Collection接口中的常用方法"><span class="level-left"><span class="level-item">1.1.1</span><span class="level-item">Collection接口中的常用方法</span></span></a></li><li><a class="level is-mobile" href="#集合Collection的遍历"><span class="level-left"><span class="level-item">1.1.2</span><span class="level-item">集合Collection的遍历</span></span></a></li></ul><li><a class="level is-mobile" href="#List接口"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">List接口</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#ArrayList类"><span class="level-left"><span class="level-item">1.2.1</span><span class="level-item">ArrayList类</span></span></a></li><li><a class="level is-mobile" href="#LinkedList类"><span class="level-left"><span class="level-item">1.2.2</span><span class="level-item">LinkedList类</span></span></a></li><li><a class="level is-mobile" href="#List接口中常用方法："><span class="level-left"><span class="level-item">1.2.3</span><span class="level-item">List接口中常用方法：</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Set接口"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">Set接口</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Map接口"><span class="level-left"><span class="level-item">2</span><span class="level-item">Map接口</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#HashMap类"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">HashMap类</span></span></a></li><li><a class="level is-mobile" href="#Map的常用方法"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Map的常用方法</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Collections工具类"><span class="level-left"><span class="level-item">3</span><span class="level-item">Collections工具类</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://hexo.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Hexo</span></span><span class="level-right"><span class="level-item tag">hexo.io</span></span></a></li><li><a class="level is-mobile" href="https://bulma.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Bulma</span></span><span class="level-right"><span class="level-item tag">bulma.io</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/java/"><span class="level-start"><span class="level-item">java</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/web%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">web基础</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">机器学习</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">编程基础</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="level-start"><span class="level-item">论文写作</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="level-start"><span class="level-item">论文阅读笔记</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-14T09:53:15.000Z">2023-01-14</time></p><p class="title"><a href="/2023/01/14/java%E5%9F%BA%E7%A1%80%E5%85%AD/">java基础六</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-14T09:53:04.000Z">2023-01-14</time></p><p class="title"><a href="/2023/01/14/java%E5%9F%BA%E7%A1%80%E4%BA%94/">java基础（五）</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-14T09:52:54.000Z">2023-01-14</time></p><p class="title"><a href="/2023/01/14/java%E5%9F%BA%E7%A1%80%E5%9B%9B/">java基础（四）</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-12T14:03:36.000Z">2023-01-12</time></p><p class="title"><a href="/2023/01/12/java%E5%9F%BA%E7%A1%80%E4%B8%89/">java基础（三）</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-12T14:03:24.000Z">2023-01-12</time></p><p class="title"><a href="/2023/01/12/java%E5%9F%BA%E7%A1%80%E4%BA%8C/">java基础（二）</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">9</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/html/"><span class="tag">html</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/java/"><span class="tag">java</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/python/"><span class="tag">python</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%85%83%E5%AD%A6%E4%B9%A0/"><span class="tag">元学习</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%88%90%E5%91%98%E6%8E%A8%E6%96%AD%E6%94%BB%E5%87%BB/"><span class="tag">成员推断攻击</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/"><span class="tag">机器学习基础</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%81%94%E9%82%A6%E5%AD%A6%E4%B9%A0/"><span class="tag">联邦学习</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="tag">论文写作</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="tag">论文阅读笔记</span><span class="tag">3</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Blackpride</a><p class="is-size-7"><span>&copy; 2023 Zehao Tian</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
