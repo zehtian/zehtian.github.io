@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>MyBatis（二） - 田泽豪的学习笔记</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="田泽豪的学习笔记"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="田泽豪的学习笔记"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本系列主要进行MyBatis框架的学习介绍，其中本篇文章介绍MyBatis的配置解析，包括核心配置文件，环境变量，属性，类型别名，映射器，生命周期和作用域等。"><meta property="og:type" content="blog"><meta property="og:title" content="MyBatis（二）"><meta property="og:url" content="http://example.com/2023/02/03/Mybatis%E4%BA%8C/"><meta property="og:site_name" content="田泽豪的学习笔记"><meta property="og:description" content="本系列主要进行MyBatis框架的学习介绍，其中本篇文章介绍MyBatis的配置解析，包括核心配置文件，环境变量，属性，类型别名，映射器，生命周期和作用域等。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://example.com/2023/02/03/Mybatis%E4%BA%8C/clip_image001.png"><meta property="og:image" content="http://example.com/2023/02/03/Mybatis%E4%BA%8C/clip_image002.png"><meta property="article:published_time" content="2023-02-03T11:41:21.000Z"><meta property="article:modified_time" content="2023-02-03T12:28:38.223Z"><meta property="article:author" content="Zehao Tian"><meta property="article:tag" content="MyBatis"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/2023/02/03/Mybatis%E4%BA%8C/clip_image001.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/02/03/Mybatis%E4%BA%8C/"},"headline":"MyBatis（二）","image":["http://example.com/2023/02/03/Mybatis%E4%BA%8C/clip_image001.png","http://example.com/2023/02/03/Mybatis%E4%BA%8C/clip_image002.png"],"datePublished":"2023-02-03T11:41:21.000Z","dateModified":"2023-02-03T12:28:38.223Z","author":{"@type":"Person","name":"Zehao Tian"},"publisher":{"@type":"Organization","name":"田泽豪的学习笔记","logo":{"@type":"ImageObject","url":{"text":"Blackpride"}}},"description":"本系列主要进行MyBatis框架的学习介绍，其中本篇文章介绍MyBatis的配置解析，包括核心配置文件，环境变量，属性，类型别名，映射器，生命周期和作用域等。"}</script><link rel="canonical" href="http://example.com/2023/02/03/Mybatis%E4%BA%8C/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Blackpride</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-02-03T11:41:21.000Z" title="2023/2/3 19:41:21">2023-02-03</time>发表</span><span class="level-item"><time dateTime="2023-02-03T12:28:38.223Z" title="2023/2/3 20:28:38">2023-02-03</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/MyBatis/">MyBatis</a></span><span class="level-item">8 分钟读完 (大约1161个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">MyBatis（二）</h1><div class="content"><p>本系列主要进行MyBatis框架的学习介绍，其中本篇文章介绍<strong>MyBatis的配置解析</strong>，包括核心配置文件，环境变量，属性，类型别名，映射器，生命周期和作用域等。</p>
+<span id="more"></span>
+
+
+
+<h2 id="配置解析"><a href="#配置解析" class="headerlink" title="配置解析"></a><strong>配置解析</strong></h2><h3 id="核心配置文件"><a href="#核心配置文件" class="headerlink" title="核心配置文件"></a><strong>核心配置文件</strong></h3><ul>
+<li>mybatis-config.xml；</li>
+<li>mybatis的配置文件包含了会深深影响Mybatis行为的设置和属性信息；</li>
+</ul>
+<h3 id="环境变量（environments）"><a href="#环境变量（environments）" class="headerlink" title="环境变量（environments）"></a><strong>环境变量（environments）</strong></h3><ul>
+<li>MyBatis可以配置成适应多种环境；</li>
+<li>不过要记住：尽管可以配置多个环境，但每个SqlSessionFactory实例只能选择一种环境；</li>
+<li>要学会使用配置多套运行环境，用default进行环境的选择；</li>
+<li>Mybatis默认的事务管理器就是<strong>JDBC</strong>，连接池: <strong>POOLED</strong></li>
+</ul>
+<h3 id="属性（properties）"><a href="#属性（properties）" class="headerlink" title="属性（properties）"></a><strong>属性（properties）</strong></h3><p>我们可以通过properties属性来实现引用配置文件；</p>
+<p>这些属性可以在外部进行配置，并可以进行动态替换。你既可以在典型的 Java 属性文件中配置这些属性，也可以在 properties 元素的子元素中设置；（db.properties）</p>
+<p>编写一个配置文件db.properties</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">driver</span>=<span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">url</span>=<span class="string">jdbc:mysql://localhost:3306/mybatis?useSSL=false&amp;;useUnicode=true&amp;;characterEncoding=UTF-8</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在核心配置文件中引入：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--引入外部配置文件--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">properties</span> <span class="attr">resource</span>=<span class="string">&quot;db.properties&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;username&quot;</span> <span class="attr">value</span>=<span class="string">&quot;root&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span> <span class="attr">value</span>=<span class="string">&quot;123456&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ul>
+<li>可以直接引入外部文件；</li>
+<li>可以在其中增加一些属性配置；</li>
+<li>如果两个文件有同一个字段，优先使用外部配置文件的。（即如果db.properties也写了username和password，以db中的为准）</li>
+</ul>
+<h3 id="类型别名（typeAliases）"><a href="#类型别名（typeAliases）" class="headerlink" title="类型别名（typeAliases）"></a><strong>类型别名（typeAliases）</strong></h3><ul>
+<li>类型别名可为 Java 类型设置一个缩写名字；</li>
+<li>存在的意义仅在于用来降低全限定类名书写的冗余。</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--方式一：直接给实体类起别名--&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">typeAliases</span>&gt;</span></span><br><span class="line">	&lt;typeAliastype=&quot;pojo.User&quot;alias=&quot;User&quot;/&gt;</span><br><span class="line"><span class="tag">&lt;/<span class="name">typeAliases</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--方式二：指定一个包名</span></span><br><span class="line"><span class="comment">MyBatis 会在包名下面搜索需要的Java Bean，比如：扫描实体类的包，它的默认别名就为这个类的类名，首字母小写。--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">typeAliases</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--也可以通过包的方式起别名，名称为这个类的类名，首字母小写的结果，此处为user--&gt;</span></span><br><span class="line">	&lt;packagename=&quot;pojo&quot;/&gt;</span><br><span class="line"><span class="tag">&lt;/<span class="name">typeAliases</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ul>
+<li><p>在实体类比较少的时候，使用第一种方式。如果实体类十分多，建议使用第二种；</p>
+</li>
+<li><p>第一种可以DIY别名，第二种不行，如果非要改，需要在实体类上加别名，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Alias(&quot;user&quot;)</span> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="映射器（mappers）"><a href="#映射器（mappers）" class="headerlink" title="映射器（mappers）"></a><strong>映射器（mappers）</strong></h3><p>MapperRegistry：注册绑定我们的Mapper文件。</p>
+<p>有两种映射器的配置方法：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--方式一：直接使用resource路径：[推荐使用方式一]--&gt;</span></span><br><span class="line"><span class="comment">&lt;!--每一个Mapper.xml都需要在Mybatis核心配置文件中注册--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mappers</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">mapper</span> <span class="attr">resource</span>=<span class="string">&quot;dao/UserMapper.xml&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mappers</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--方式二：使用接口同名的类class进行配置--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mappers</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">mapper</span> <span class="attr">class</span>=<span class="string">&quot;dao.UserMapper&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mappers</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--方式三：使用扫描包package进行注入绑定--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mappers</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">package</span> <span class="attr">name</span>=<span class="string">&quot;dao&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mappers</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>方法二和方法三注意点：</p>
+<ul>
+<li>接口和他的Mapper配置文件必须同名；</li>
+<li>接口和他的Mapper配置文件必须在同一个包下；</li>
+<li>注意：class时为类名，用 . ，resource时为xml的路径，用 &#x2F; 。</li>
+</ul>
+<h3 id="生命周期和作用域"><a href="#生命周期和作用域" class="headerlink" title="生命周期和作用域"></a><strong>生命周期和作用域</strong></h3><p>生命周期，和作用域，是至关重要的，因为错误的使用会导致非常严重的并发问题。</p>
+<p><strong>生命周期：</strong></p>
+<p><img src="/2023/02/03/Mybatis%E4%BA%8C/clip_image001.png"></p>
+<p><strong>SqlSessionFactoryBuilder:</strong></p>
+<ul>
+<li>一旦创建了SqlSessionFactory，就不再需要它了；</li>
+<li>局部变量</li>
+</ul>
+<p><strong>SqlSessionFactory：</strong></p>
+<ul>
+<li>说白了就是可以想象为：数据库连接池；</li>
+<li>SqlSessionFactory一旦被创建就应该在应用的运行期间一直存在，没有任何理由丢弃它或重新创建另一个实例；</li>
+<li>因此SqlSessionFactory的最佳作用域是应用作用域；（即全局变量）</li>
+<li>最简单的就是使用单例模式或者静态单例模式。</li>
+</ul>
+<p><strong>SqlSession：</strong></p>
+<ul>
+<li>是连接到连接池的一个请求!</li>
+<li>SqlSession的实例不是线程安全的，因此是不能被共享的，所以它的最佳的作用域是请求或方法作用域。（创建实例时使用，实例使用完毕时关闭）</li>
+<li>用完之后需要赶紧关闭，否则资源被占用！</li>
+</ul>
+<p>SqlSessionFactory和SqlSession的关系：一个SqlSessionFactory工厂可以创建多个SqlSession类，每个类最多用于一个线程；一个sqlSession实例可以创建多个Mapper，用于执行指令。这里的每一个Mapper，就代表一个具体的业务。</p>
+<p><img src="/2023/02/03/Mybatis%E4%BA%8C/clip_image002.png"></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>MyBatis（二）</p><p><a href="http://example.com/2023/02/03/Mybatis二/">http://example.com/2023/02/03/Mybatis二/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Zehao Tian</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2023-02-03</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2023-02-03</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/MyBatis/">MyBatis</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2023/02/03/Mybatis%E4%B8%89/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Mybatis三</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2023/02/03/MyBatis%E4%B8%80/"><span class="level-item">MyBatis（一）</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="https://octodex.github.com/images/codercat.jpg" alt="田泽豪"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">田泽豪</p><p class="is-size-6 is-block">越努力，越幸运</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HUST</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">29</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">8</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">13</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zehtian" target="_blank" rel="noopener">关注我</a></div></div></div><!--!--><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://hexo.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Hexo</span></span><span class="level-right"><span class="level-item tag">hexo.io</span></span></a></li><li><a class="level is-mobile" href="https://bulma.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Bulma</span></span><span class="level-right"><span class="level-item tag">bulma.io</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/MyBatis/"><span class="level-start"><span class="level-item">MyBatis</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/MySQL/"><span class="level-start"><span class="level-item">MySQL</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/categories/java/"><span class="level-start"><span class="level-item">java</span></span><span class="level-end"><span class="level-item tag">8</span></span></a></li><li><a class="level is-mobile" href="/categories/web%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">web基础</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">机器学习</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">编程基础</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="level-start"><span class="level-item">论文写作</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="level-start"><span class="level-item">论文阅读笔记</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-03T11:45:40.000Z">2023-02-03</time></p><p class="title"><a href="/2023/02/03/MyBatis%E5%9B%9B/">MyBatis四</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-03T11:41:37.000Z">2023-02-03</time></p><p class="title"><a href="/2023/02/03/Mybatis%E4%B8%89/">Mybatis三</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-03T11:41:21.000Z">2023-02-03</time></p><p class="title"><a href="/2023/02/03/Mybatis%E4%BA%8C/">MyBatis（二）</a></p><p class="categories"><a href="/categories/MyBatis/">MyBatis</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-03T11:41:03.000Z">2023-02-03</time></p><p class="title"><a href="/2023/02/03/MyBatis%E4%B8%80/">MyBatis（一）</a></p><p class="categories"><a href="/categories/MyBatis/">MyBatis</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-01-25T12:53:11.000Z">2023-01-25</time></p><p class="title"><a href="/2023/01/25/JDBC/">JDBC</a></p><p class="categories"><a href="/categories/MySQL/">MySQL</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2023/02/"><span class="level-start"><span class="level-item">二月 2023</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">15</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/JDBC/"><span class="tag">JDBC</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MyBat-is/"><span class="tag">MyBat is</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MyBatis/"><span class="tag">MyBatis</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MySQL/"><span class="tag">MySQL</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/html/"><span class="tag">html</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/java/"><span class="tag">java</span><span class="tag">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/python/"><span class="tag">python</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%85%83%E5%AD%A6%E4%B9%A0/"><span class="tag">元学习</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%88%90%E5%91%98%E6%8E%A8%E6%96%AD%E6%94%BB%E5%87%BB/"><span class="tag">成员推断攻击</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/"><span class="tag">机器学习基础</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%81%94%E9%82%A6%E5%AD%A6%E4%B9%A0/"><span class="tag">联邦学习</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="tag">论文写作</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="tag">论文阅读笔记</span><span class="tag">3</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Blackpride</a><p class="is-size-7"><span>&copy; 2023 Zehao Tian</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
