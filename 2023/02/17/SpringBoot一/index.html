@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>SpringBoot（一） - 田泽豪的学习笔记</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="田泽豪的学习笔记"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="田泽豪的学习笔记"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本系列主要进行SpringBoot框架的学习介绍，SpringBoot是一种基于Spring的框架，能够开箱即用，提供各种默认配置来简化项目配置，来对Spring进行简化。其中本篇文章进行SpringBoot的简介和有关配置文件的介绍，同时会讲解SpringBoot的自动装配原理并搭建第一个SpringBoot程序。"><meta property="og:type" content="blog"><meta property="og:title" content="SpringBoot（一）"><meta property="og:url" content="http://example.com/2023/02/17/SpringBoot%E4%B8%80/"><meta property="og:site_name" content="田泽豪的学习笔记"><meta property="og:description" content="本系列主要进行SpringBoot框架的学习介绍，SpringBoot是一种基于Spring的框架，能够开箱即用，提供各种默认配置来简化项目配置，来对Spring进行简化。其中本篇文章进行SpringBoot的简介和有关配置文件的介绍，同时会讲解SpringBoot的自动装配原理并搭建第一个SpringBoot程序。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://example.com/img/og_image.png"><meta property="article:published_time" content="2023-02-17T14:00:13.000Z"><meta property="article:modified_time" content="2023-02-18T12:50:31.587Z"><meta property="article:author" content="Zehao Tian"><meta property="article:tag" content="SpringBoot"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/02/17/SpringBoot%E4%B8%80/"},"headline":"SpringBoot（一）","image":["http://example.com/img/og_image.png"],"datePublished":"2023-02-17T14:00:13.000Z","dateModified":"2023-02-18T12:50:31.587Z","author":{"@type":"Person","name":"Zehao Tian"},"publisher":{"@type":"Organization","name":"田泽豪的学习笔记","logo":{"@type":"ImageObject","url":{"text":"Blackpride"}}},"description":"本系列主要进行SpringBoot框架的学习介绍，SpringBoot是一种基于Spring的框架，能够开箱即用，提供各种默认配置来简化项目配置，来对Spring进行简化。其中本篇文章进行SpringBoot的简介和有关配置文件的介绍，同时会讲解SpringBoot的自动装配原理并搭建第一个SpringBoot程序。"}</script><link rel="canonical" href="http://example.com/2023/02/17/SpringBoot%E4%B8%80/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Blackpride</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-02-17T14:00:13.000Z" title="2023/2/17 22:00:13">2023-02-17</time>发表</span><span class="level-item"><time dateTime="2023-02-18T12:50:31.587Z" title="2023/2/18 20:50:31">2023-02-18</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/SpringBoot/">SpringBoot</a></span><span class="level-item">21 分钟读完 (大约3090个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">SpringBoot（一）</h1><div class="content"><p>本系列主要进行SpringBoot框架的学习介绍，SpringBoot是一种基于Spring的框架，能够开箱即用，提供各种默认配置来简化项目配置，来对Spring进行简化。<strong>其中本篇文章进行SpringBoot的简介和有关配置文件的介绍</strong>，同时会讲解SpringBoot的自动装配原理并搭建第一个SpringBoot程序。</p>
+<span id="more"></span>
+
+
+
+<h2 id="SpringBoot简介"><a href="#SpringBoot简介" class="headerlink" title="SpringBoot简介"></a><strong>SpringBoot简介</strong></h2><h3 id="回顾Spring"><a href="#回顾Spring" class="headerlink" title="回顾Spring"></a><strong>回顾Spring</strong></h3><p>Spring是一个轻量级的Java开发框架。Spring是为了解决企业级应用开发的复杂性而创建的，简化开发。</p>
+<p><strong>Spring是如何简化Java开发的：</strong></p>
+<p>为了降低Java开发的复杂性，Spring采用了以下4种关键策略：</p>
+<ol>
+<li>基于POJO的轻量级和最小侵入性编程，所有东西都是bean；</li>
+<li>通过IOC，依赖注入（DI）和面向接口实现松耦合；</li>
+<li>基于切面（AOP）和惯例进行声明式编程；</li>
+<li>通过切面和模版减少样式代码，SqlSessionTemplate，RedisTemplate，xxxTemplate…</li>
+</ol>
+<p><strong>SpringBoot的主要优点：</strong></p>
+<ol>
+<li><p>为所有Spring开发者更快的入门；</p>
+</li>
+<li><p><strong>开箱即用</strong>，提供各种默认配置来简化项目配置；</p>
+</li>
+<li><p>内嵌式容器简化Web项目；</p>
+</li>
+<li><p>没有冗余代码生成和XML配置的要求。</p>
+</li>
+</ol>
+<h3 id="了解微服务"><a href="#了解微服务" class="headerlink" title="了解微服务"></a><strong>了解微服务</strong></h3><p>微服务（或微服务架构）是一种云原生架构方法，其中单个应用程序由许多松散耦合且可独立部署的较小组件或服务组成。这些服务通常：</p>
+<ol>
+<li>有自己的堆栈，包括数据库和数据模型；</li>
+<li>通过REST API，事件流和消息代理的组合相互通信；</li>
+<li>它们是按业务能力组织的，分隔服务的线通常称为有界上下文。</li>
+</ol>
+<p>尽管有关微服务的许多讨论都围绕体系结构定义和特征展开，但它们的价值可以通过相当简单的业务和组织收益更普遍地理解：</p>
+<ol>
+<li>可以更轻松地更新代码。</li>
+<li>团队可以为不同的组件使用不同的堆栈。</li>
+<li>组件可以彼此独立地进行缩放，从而减少了因必须缩放整个应用程序而产生的浪费和成本，因为单个功能可能面临过多的负载。</li>
+</ol>
+<p>spring带来了构建大型分布式微服务的全套，全程产品：</p>
+<ul>
+<li>构建一个个功能独立的微服务应用单元，可以使用spring     boot，快速帮我们构建一个应用；</li>
+<li>大型分布式网络服务的调用，这部分由spring     cloud完成，实现分布式；</li>
+<li>在分布式中间，进行流式数据计算、批处理，我们用spring     cloud data flow。</li>
+</ul>
+<h3 id="第一个SpringBoot程序"><a href="#第一个SpringBoot程序" class="headerlink" title="第一个SpringBoot程序"></a><strong>第一个SpringBoot程序</strong></h3><p>直接在IDEA中进行创建，主要步骤：</p>
+<p>1.环境配置</p>
+<p>创建Spring Initializr项目 -&gt; url选择custom：<a target="_blank" rel="noopener" href="https://start.springboot.io/">https://start.springboot.io/</a> -&gt; Type改为Maven，java版本改为8 -&gt; 勾选Java web依赖，设置SpringBoot版本2.7.8（超过3的版本默认使用jdk17）</p>
+<p>会自动进行导包和web的配置。</p>
+<p>2.编写一个http接口</p>
+<ul>
+<li>在主程序（即启动文件）的同级目录下，新建一个controller包，一定要在同级目录下，否则识别不到；</li>
+<li>在包中新建一个HelloController类：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloController</span> &#123;</span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/hello&quot;)</span>  </span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span> &#123;    </span><br><span class="line">    	<span class="keyword">return</span> <span class="string">&quot;Hello World&quot;</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>3.在springboot的默认配置文件（application.properties）中修改端口号：（默认为8080）</p>
+<p>server.port&#x3D;8999</p>
+<h3 id="自动装配机制"><a href="#自动装配机制" class="headerlink" title="自动装配机制"></a><strong>自动装配机制</strong></h3><h4 id="源码分析（从启动类的注解开始分析）："><a href="#源码分析（从启动类的注解开始分析）：" class="headerlink" title="源码分析（从启动类的注解开始分析）："></a><strong>源码分析（从启动类的注解开始分析）：</strong></h4><p>1.主启动类的注解@SpringBootApplication：</p>
+<p>作用：标注在某个类上说明这个类是SpringBoot的主配置类 ， SpringBoot就应该运行这个类的main方法来启动SpringBoot应用；</p>
+<p>2.进入这个注解：可以看到上面还有很多其他注解</p>
+<p>@SpringBootConfiguration , @EnableAutoConfiguration, @ComponentScan </p>
+<blockquote>
+<p>ComponentScan</p>
+</blockquote>
+<p>这个注解在Spring中很重要，它对应XML配置中的元素。</p>
+<p>作用：自动扫描并加载符合条件的组件或者bean，将这个bean定义加载到IOC容器中</p>
+<blockquote>
+<p>@SpringBootConfiguration</p>
+</blockquote>
+<p>作用：SpringBoot的配置类，标注在某个类上，表示这是一个SpringBoot的配置类；</p>
+<p>上面有注解@Configuration，说明这是一个配置类 ，配置类就是对应Spring的xml 配置文件；</p>
+<p>还有@Component，说明，启动类本身也是Spring中的一个组件。</p>
+<blockquote>
+<p>@EnableAutoConfiguration</p>
+</blockquote>
+<p>作用：开启自动配置功能。以前我们需要自己配置的东西，而现在SpringBoot可以自动帮我们配置 ；@EnableAutoConfiguration告诉SpringBoot开启自动配置功能，这样自动配置才能生效；</p>
+<p>3.找到了有关AutoConfiguration的字样，进入@EnableAutoConfiguration注解继续查看：</p>
+<p>@AutoConfigurationPackage：自动配置包</p>
+<p>@Import({AutoConfigurationImportSelector.class})：给容器导入组件。会导入哪些组件呢？</p>
+<p>4.继续进入AutoConfigurationImportSelector查看类和方法，找到了getCandidateConfigurations方法：</p>
+<p>作用：获取组件的配置；</p>
+<p>5.继续查看下面调用的方法，继续发现了loadFactoryNames()和loadSpringFactories()方法；</p>
+<p>6.在loadSpringFactories()中发现了<strong>spring.factories</strong>，全局搜索它，看到了很多自动配置的文件，这就是自动配置根源所在。</p>
+<p><strong>SpringBoot自动装配原理：</strong></p>
+<p>（从启动类的注解@SpringBootApplication开始进行源码分析，最后找到了自动装配的路径&#x2F;META-INF&#x2F;spring.factories）</p>
+<ol>
+<li>springboot在启动的时候，会从类路径下&#x2F;META-INF&#x2F;spring.factories获取EnableAutoConfiguration指定的值；</li>
+<li>将这些值作为自动配置的类导入容器，自动配置就会生效，帮我进行自动配置工作；</li>
+<li>整个javaEE的解决方案和自动配置的东西都在springboot-autoconfigure的jar包中；</li>
+<li>这个包会给容器中导入非常多的自动配置类（xxxAutoConfiguration），就是这些类给容器中导入了这个场景需要的所有组件，并配置好这些组件;</li>
+<li>有了自动配置类，免去了我们手动编写配置注入功能组件等的工作。</li>
+</ol>
+<p><strong>结论：</strong>springboot所有自动配置都是在启动的时候扫描并加载spring.factories文件，所有的自动配置类都在这里面，但是不一定生效，需要判断条件是否成立。只要导入了对应的start，就有对应的启动器了，有了启动器，我们自动装配就会生效，然后就配置成功。</p>
+<h4 id="源码分析（从SpringApplication-run方法开始分析）："><a href="#源码分析（从SpringApplication-run方法开始分析）：" class="headerlink" title="源码分析（从SpringApplication.run方法开始分析）："></a><strong>源码分析（从SpringApplication.run方法开始分析）：</strong></h4><p>SpringApplication类主要做了以下四件事情：</p>
+<ol>
+<li>推断应用的类型是普通的项目还是Web项目；</li>
+<li>查找并加载所有可用初始化器，设置到initializers属性中；</li>
+<li>找出所有的应用程序监听器，设置到listeners属性中；</li>
+<li><strong>推断并设置main方法的定义类，找到运行的主类。</strong>（这一点最重要，找到主类）</li>
+</ol>
+<h4 id="面试问题：关于SpringBoot，谈谈你的理解："><a href="#面试问题：关于SpringBoot，谈谈你的理解：" class="headerlink" title="面试问题：关于SpringBoot，谈谈你的理解："></a><strong>面试问题：关于SpringBoot，谈谈你的理解：</strong></h4><ol>
+<li>讲一讲自动装配（重点）；</li>
+<li>讲一讲run()方法：<ol>
+<li>能够推断应用的类型是普通的项目还是Web项目（web项目会一直启动，普通项目不行）；</li>
+<li>推断并设置main方法的定义类，找到运行的主类（找不到主类，就无法加载运行）；</li>
+<li>run方法的执行中，会有一些全局存在的监听器，能够获取上下文并处理bean。</li>
+</ol>
+</li>
+</ol>
+<h2 id="SpringBoot配置文件"><a href="#SpringBoot配置文件" class="headerlink" title="SpringBoot配置文件"></a><strong>SpringBoot配置文件</strong></h2><h3 id="yaml语法"><a href="#yaml语法" class="headerlink" title="yaml语法"></a><strong>yaml语法</strong></h3><p>SpringBoot使用一个全局的配置文件，配置文件名称是固定的，可以用properties文件或yaml文件进行配置，配置文件名称必须为application。</p>
+<ul>
+<li>application.properties：语法结构     ：key&#x3D;value</li>
+<li>application.yaml：语法结构     ：key：空格 value</li>
+</ul>
+<p>配置文件的作用：修改SpringBoot自动配置的默认值，因为SpringBoot在底层都给我们自动配置好了。</p>
+<p><strong>yaml语法要求：</strong></p>
+<ol>
+<li>空格不能省略；</li>
+<li>以缩进来控制层级关系，只要是左边对齐的一列数据都是同一个层级的；</li>
+<li>属性和值的大小写都是十分敏感的。</li>
+</ol>
+<h3 id="yaml注入配置文件"><a href="#yaml注入配置文件" class="headerlink" title="yaml注入配置文件"></a><strong>yaml注入配置文件</strong></h3><p>1.编写配置文件application.yaml，实现注入：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">person:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">qinjiang</span></span><br><span class="line">  <span class="attr">age:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">happy:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">birth:</span> <span class="number">2000</span><span class="string">/01/01</span></span><br><span class="line">  <span class="attr">maps:</span> &#123;<span class="string">k1:v1</span>,<span class="string">k2:v2</span>&#125;</span><br><span class="line">  <span class="attr">lists:</span></span><br><span class="line">  <span class="string">-code</span></span><br><span class="line">  <span class="string">-girl</span></span><br><span class="line">  <span class="string">-music</span></span><br><span class="line"> </span><br><span class="line"><span class="attr">dog:</span></span><br><span class="line"> <span class="attr">name:</span> <span class="string">旺财</span></span><br><span class="line"> <span class="attr">age:</span> <span class="number">1</span></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>2.编写用于测试的Person类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span> <span class="comment">//声明为Spring组件，注册bean到容器中</span></span><br><span class="line"><span class="meta">@ConfigurationProperties(prefix=&quot;person&quot;)</span> <span class="comment">//等同于在每个属性上设置@Value</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">    <span class="keyword">private</span> Boolean happy;</span><br><span class="line">    <span class="keyword">private</span> Date birth;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;String,Object&gt; maps;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Object&gt; lists;</span><br><span class="line">    <span class="keyword">private</span> Dog dog;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>@ConfigurationProperties作用：</p>
+<ul>
+<li>将配置文件中配置的每一个属性的值，映射到这个组件中；</li>
+<li>告诉SpringBoot将本类中的所有属性和配置文件中相关的配置进行绑定；</li>
+<li>参数prefix&#x3D;”person”：将配置文件中的person下面的所有属性一一对应。</li>
+</ul>
+<p>3.进行单元测试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Springboot02</span> ConfigApplicationTests&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    Person person;<span class="comment">//将person自动注入进来</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">void</span> context <span class="title function_">Loads</span><span class="params">()</span>&#123;</span><br><span class="line">    	System.out.println(person);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>yaml配置文件进行注入（即通过@ConfigurationProperties）与@Value方式的区别：</p>
+<ol>
+<li>@ConfigurationProperties只需要写一次即可 ， @Value则需要每个字段都添加；</li>
+<li>@ConfigurationProperties支持松散绑定，而@Value不支持。松散绑定：比如我的yml中写的last-name，这个和lastName是一样的效果；</li>
+<li>@ConfigurationProperties支持JSR303数据校验，而@Value不支持。数据校验：这个就是我们可以在字段使用前增加一层过滤器验证，以保证数据的合法性；</li>
+<li>复杂类型封装，yaml中可以封装对象（如上例中的Dog），     使用value就不支持。</li>
+</ol>
+<p><strong>结论：</strong></p>
+<ol>
+<li>配置yml和配置properties都可以获取到值，强烈推荐 yml；</li>
+<li>如果我们在某个业务中，只需要获取配置文件中的某个值，可以使用一下@value；</li>
+<li>如果说，我们专门编写了一个JavaBean来和配置文件进行一一映射，就直接使用@configurationProperties，不要犹豫！</li>
+</ol>
+<h3 id="多环境切换"><a href="#多环境切换" class="headerlink" title="多环境切换"></a><strong>多环境切换</strong></h3><p><strong>1.使用多配置文件实现环境切换：</strong></p>
+<p>我们在主配置文件编写的时候，文件名可以是 application-{profile}.properties&#x2F;yml，用来指定多个环境版本；</p>
+<p><strong>例如：</strong></p>
+<p>application-test.properties 代表测试环境配置</p>
+<p>application-dev.properties 代表开发环境配置</p>
+<p>但是Springboot并不会直接启动这些配置文件，它默认使用application.properties主配置文件；</p>
+<p>我们需要通过一个配置来选择需要激活的环境：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#比如在配置文件中指定使用dev环境，我们可以通过设置不同的端口号进行测试；</span></span><br><span class="line"><span class="comment">#我们启动SpringBoot，就可以看到已经切换到dev下的配置了</span></span><br><span class="line"><span class="attr">spring.profiles.active</span>=<span class="string">dev</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.使用单一配置文件实现环境切换：</strong></p>
+<p>和properties配置文件中一样，但是使用yml去实现不需要创建多个配置文件。在主配置文件application.yaml下创建即可：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span> </span><br><span class="line">  <span class="attr">port:</span> <span class="number">8081</span> </span><br><span class="line">  <span class="comment">#选择要激活哪个环境块</span></span><br><span class="line"><span class="attr">spring:</span> </span><br><span class="line">  <span class="attr">profiles:</span> </span><br><span class="line">  <span class="attr">active:</span> <span class="string">prod</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">server:</span> </span><br><span class="line">  <span class="attr">port:</span> </span><br><span class="line">    <span class="number">8083</span></span><br><span class="line"><span class="attr">spring:</span> </span><br><span class="line">  <span class="attr">profiles:</span> </span><br><span class="line">    <span class="string">dev</span>  <span class="comment">#配置环境的名称</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">server:</span> </span><br><span class="line">  <span class="attr">port:</span> </span><br><span class="line">    <span class="number">8084</span></span><br><span class="line"><span class="attr">spring:</span> </span><br><span class="line">  <span class="attr">profiles:</span> </span><br><span class="line">    <span class="string">prod</span> <span class="comment">#配置环境的名称</span></span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+
+<p>注意：如果yml和properties同时都配置了端口，并且没有激活其他环境 ， 默认会使用properties配置文件的配置。</p>
+<p><strong>配置文件位置与优先级的关系：</strong></p>
+<p>springboot启动会扫描以下位置的application.properties或者application.yml文件作为SpringBoot的默认配置文件：</p>
+<ul>
+<li>优先级1：项目路径下的config文件夹中的配置文件；</li>
+<li>优先级2：项目路径下的配置文件；</li>
+<li>优先级3：资源路径下的config文件夹的配置文件；</li>
+<li>优先级4：资源路径下配置文件。</li>
+</ul>
+<p>说明SpringBoot默认创建的配置文件位置优先级最低。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>SpringBoot（一）</p><p><a href="http://example.com/2023/02/17/SpringBoot一/">http://example.com/2023/02/17/SpringBoot一/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Zehao Tian</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2023-02-17</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2023-02-18</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/SpringBoot/">SpringBoot</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2023/02/17/SpringBoot%E4%BA%8C/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">SpringBoot（二）</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2023/02/10/SpringMVC%E4%BA%94/"><span class="level-item">SpringMVC（五）</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="https://octodex.github.com/images/codercat.jpg" alt="田泽豪"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">田泽豪</p><p class="is-size-6 is-block">越努力，越幸运</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HUST</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">45</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">11</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">15</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zehtian" target="_blank" rel="noopener">关注我</a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#SpringBoot简介"><span class="level-left"><span class="level-item">1</span><span class="level-item">SpringBoot简介</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#回顾Spring"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">回顾Spring</span></span></a></li><li><a class="level is-mobile" href="#了解微服务"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">了解微服务</span></span></a></li><li><a class="level is-mobile" href="#第一个SpringBoot程序"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">第一个SpringBoot程序</span></span></a></li><li><a class="level is-mobile" href="#自动装配机制"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">自动装配机制</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#源码分析（从启动类的注解开始分析）："><span class="level-left"><span class="level-item">1.4.1</span><span class="level-item">源码分析（从启动类的注解开始分析）：</span></span></a></li><li><a class="level is-mobile" href="#源码分析（从SpringApplication-run方法开始分析）："><span class="level-left"><span class="level-item">1.4.2</span><span class="level-item">源码分析（从SpringApplication.run方法开始分析）：</span></span></a></li><li><a class="level is-mobile" href="#面试问题：关于SpringBoot，谈谈你的理解："><span class="level-left"><span class="level-item">1.4.3</span><span class="level-item">面试问题：关于SpringBoot，谈谈你的理解：</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#SpringBoot配置文件"><span class="level-left"><span class="level-item">2</span><span class="level-item">SpringBoot配置文件</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#yaml语法"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">yaml语法</span></span></a></li><li><a class="level is-mobile" href="#yaml注入配置文件"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">yaml注入配置文件</span></span></a></li><li><a class="level is-mobile" href="#多环境切换"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">多环境切换</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://hexo.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Hexo</span></span><span class="level-right"><span class="level-item tag">hexo.io</span></span></a></li><li><a class="level is-mobile" href="https://bulma.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Bulma</span></span><span class="level-right"><span class="level-item tag">bulma.io</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/MyBatis/"><span class="level-start"><span class="level-item">MyBatis</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/MySQL/"><span class="level-start"><span class="level-item">MySQL</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/categories/Spring/"><span class="level-start"><span class="level-item">Spring</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/SpringBoot/"><span class="level-start"><span class="level-item">SpringBoot</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/SpringMVC/"><span class="level-start"><span class="level-item">SpringMVC</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/java/"><span class="level-start"><span class="level-item">java</span></span><span class="level-end"><span class="level-item tag">8</span></span></a></li><li><a class="level is-mobile" href="/categories/web%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">web基础</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">机器学习</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">编程基础</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="level-start"><span class="level-item">论文写作</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="level-start"><span class="level-item">论文阅读笔记</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-17T14:01:27.000Z">2023-02-17</time></p><p class="title"><a href="/2023/02/17/SpringBoot%E4%BA%94/">SpringBoot（五）</a></p><p class="categories"><a href="/categories/SpringBoot/">SpringBoot</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-17T14:01:14.000Z">2023-02-17</time></p><p class="title"><a href="/2023/02/17/SpringBoot%E5%9B%9B/">SpringBoot（四）</a></p><p class="categories"><a href="/categories/SpringBoot/">SpringBoot</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-17T14:01:01.000Z">2023-02-17</time></p><p class="title"><a href="/2023/02/17/SpringBoot%E4%B8%89/">SpringBoot（三）</a></p><p class="categories"><a href="/categories/SpringBoot/">SpringBoot</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-17T14:00:46.000Z">2023-02-17</time></p><p class="title"><a href="/2023/02/17/SpringBoot%E4%BA%8C/">SpringBoot（二）</a></p><p class="categories"><a href="/categories/SpringBoot/">SpringBoot</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-17T14:00:13.000Z">2023-02-17</time></p><p class="title"><a href="/2023/02/17/SpringBoot%E4%B8%80/">SpringBoot（一）</a></p><p class="categories"><a href="/categories/SpringBoot/">SpringBoot</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2023/02/"><span class="level-start"><span class="level-item">二月 2023</span></span><span class="level-end"><span class="level-item tag">20</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">15</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/JDBC/"><span class="tag">JDBC</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MyBatis/"><span class="tag">MyBatis</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MySQL/"><span class="tag">MySQL</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Spring/"><span class="tag">Spring</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringBoot/"><span class="tag">SpringBoot</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringMVC/"><span class="tag">SpringMVC</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/html/"><span class="tag">html</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/java/"><span class="tag">java</span><span class="tag">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/python/"><span class="tag">python</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%85%83%E5%AD%A6%E4%B9%A0/"><span class="tag">元学习</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%88%90%E5%91%98%E6%8E%A8%E6%96%AD%E6%94%BB%E5%87%BB/"><span class="tag">成员推断攻击</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/"><span class="tag">机器学习基础</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%81%94%E9%82%A6%E5%AD%A6%E4%B9%A0/"><span class="tag">联邦学习</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="tag">论文写作</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="tag">论文阅读笔记</span><span class="tag">3</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Blackpride</a><p class="is-size-7"><span>&copy; 2023 Zehao Tian</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
