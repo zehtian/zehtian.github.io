@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>JVM - 田泽豪的学习笔记</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="田泽豪的学习笔记"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="田泽豪的学习笔记"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本篇文章进行了java基础中jvm的介绍，jvm也是Java虚拟机。java虚拟机有自己完善的架构，如处理器、堆栈、寄存器等，还具有相应的指令系统。java虚拟机屏蔽了与具体操作系统平台相关的信息，使得java程序只需生成在java虚拟机上运行的目标代码，就可以在多种平台上不加修改地运行。本篇文章主要讲解：jvm的位置，体系结构以及垃圾回收机制。"><meta property="og:type" content="blog"><meta property="og:title" content="JVM"><meta property="og:url" content="http://example.com/2023/02/27/JVM/"><meta property="og:site_name" content="田泽豪的学习笔记"><meta property="og:description" content="本篇文章进行了java基础中jvm的介绍，jvm也是Java虚拟机。java虚拟机有自己完善的架构，如处理器、堆栈、寄存器等，还具有相应的指令系统。java虚拟机屏蔽了与具体操作系统平台相关的信息，使得java程序只需生成在java虚拟机上运行的目标代码，就可以在多种平台上不加修改地运行。本篇文章主要讲解：jvm的位置，体系结构以及垃圾回收机制。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://example.com/2023/02/27/JVM/image-20230227111806471.png"><meta property="og:image" content="http://example.com/2023/02/27/JVM/1921676-20201007094926264-668681814.png"><meta property="og:image" content="http://example.com/2023/02/27/JVM/1921676-20201007094957130-1811268009.png"><meta property="og:image" content="http://example.com/2023/02/27/JVM/1921676-20201007095020922-752187205.png"><meta property="og:image" content="http://example.com/2023/02/27/JVM/1921676-20201007095129938-1764168219.png"><meta property="og:image" content="http://example.com/2023/02/27/JVM/image-20230227165205054.png"><meta property="og:image" content="http://example.com/2023/02/27/JVM/1921676-20201007095228743-178776641.png"><meta property="og:image" content="http://example.com/2023/02/27/JVM/1921676-20201007095254509-1476258044.png"><meta property="og:image" content="http://example.com/2023/02/27/JVM/image-20230227193606976.png"><meta property="article:published_time" content="2023-02-27T12:42:01.000Z"><meta property="article:modified_time" content="2023-02-27T12:52:30.041Z"><meta property="article:author" content="Zehao Tian"><meta property="article:tag" content="jvm"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/2023/02/27/JVM/image-20230227111806471.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/02/27/JVM/"},"headline":"JVM","image":["http://example.com/2023/02/27/JVM/image-20230227111806471.png","http://example.com/2023/02/27/JVM/1921676-20201007094926264-668681814.png","http://example.com/2023/02/27/JVM/1921676-20201007094957130-1811268009.png","http://example.com/2023/02/27/JVM/1921676-20201007095020922-752187205.png","http://example.com/2023/02/27/JVM/1921676-20201007095129938-1764168219.png","http://example.com/2023/02/27/JVM/image-20230227165205054.png","http://example.com/2023/02/27/JVM/1921676-20201007095228743-178776641.png","http://example.com/2023/02/27/JVM/1921676-20201007095254509-1476258044.png","http://example.com/2023/02/27/JVM/image-20230227193606976.png"],"datePublished":"2023-02-27T12:42:01.000Z","dateModified":"2023-02-27T12:52:30.041Z","author":{"@type":"Person","name":"Zehao Tian"},"publisher":{"@type":"Organization","name":"田泽豪的学习笔记","logo":{"@type":"ImageObject","url":{"text":"Blackpride"}}},"description":"本篇文章进行了java基础中jvm的介绍，jvm也是Java虚拟机。java虚拟机有自己完善的架构，如处理器、堆栈、寄存器等，还具有相应的指令系统。java虚拟机屏蔽了与具体操作系统平台相关的信息，使得java程序只需生成在java虚拟机上运行的目标代码，就可以在多种平台上不加修改地运行。本篇文章主要讲解：jvm的位置，体系结构以及垃圾回收机制。"}</script><link rel="canonical" href="http://example.com/2023/02/27/JVM/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Blackpride</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-02-27T12:42:01.000Z" title="2023/2/27 20:42:01">2023-02-27</time>发表</span><span class="level-item"><time dateTime="2023-02-27T12:52:30.041Z" title="2023/2/27 20:52:30">2023-02-27</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/java/">java</a></span><span class="level-item">27 分钟读完 (大约4064个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">JVM</h1><div class="content"><p>本篇文章进行了java基础中jvm的介绍，jvm也是Java虚拟机。java虚拟机有自己完善的架构，如处理器、堆栈、寄存器等，还具有相应的指令系统。java虚拟机屏蔽了与具体操作系统平台相关的信息，使得java程序只需生成在java虚拟机上运行的目标代码，就可以在多种平台上不加修改地运行。本篇文章主要讲解：jvm的位置，体系结构以及垃圾回收机制。</p>
+ <span id="more"></span>
+
+
+
+<h2 id="1-面试问题"><a href="#1-面试问题" class="headerlink" title="1. 面试问题"></a>1. 面试问题</h2><ul>
+<li><p>请你谈谈你对jvm的理解？java8虚拟机和之前的变化更新？</p>
+</li>
+<li><p>什么是oom，什么是栈溢出StackOverFlowError？怎么分析？</p>
+</li>
+<li><p>jvm的常用调优参数有哪些？</p>
+</li>
+<li><p>内存快照如何抓取，怎么分析Dump文件？知道吗？</p>
+</li>
+<li><p>谈谈jvm，类加载器你的认识？</p>
+</li>
+</ul>
+<h2 id="2-jvm的位置"><a href="#2-jvm的位置" class="headerlink" title="2. jvm的位置"></a>2. jvm的位置</h2><blockquote>
+<p>在操作系统之上，包含在jre里。</p>
+</blockquote>
+<p><img src="/2023/02/27/JVM/image-20230227111806471.png"></p>
+<h2 id="3-jvm的体系结构"><a href="#3-jvm的体系结构" class="headerlink" title="3. jvm的体系结构"></a>3. jvm的体系结构</h2><p><strong>体系结构示意图：</strong></p>
+<p><img src="/2023/02/27/JVM/1921676-20201007094926264-668681814.png"></p>
+<p>简化版：</p>
+<p><img src="/2023/02/27/JVM/1921676-20201007094957130-1811268009.png"></p>
+<ul>
+<li><p>对java文件，进行编译（javac），就得到类文件（class file）；</p>
+</li>
+<li><p>栈、本地方法栈、程序计数器不会发生gc（垃圾回收机制）；</p>
+</li>
+<li><p>jvm调优主要在堆，方法区有一小部分。</p>
+</li>
+</ul>
+<h2 id="4-类加载器"><a href="#4-类加载器" class="headerlink" title="4. 类加载器"></a>4. 类加载器</h2><p>作用：加载.class文件。</p>
+<p>新建的对象放入堆里面，引用（地址）放到栈，其中引用指向堆里面对应的对象。</p>
+<p><img src="/2023/02/27/JVM/1921676-20201007095020922-752187205.png"></p>
+<p>四级加载器，从上到下依次为：</p>
+<ul>
+<li>虚拟机自带的加载器；</li>
+<li><strong>启动类（根）加载器 Bootstrap ClassLoader</strong>，主要负责加载Java核心类库，%JRE_HOME%\lib下的rt.jar、resources.jar、charsets.jar和class等；</li>
+<li><strong>扩展类加载器 Extension ClassLoader</strong>，主要负责加载目录%JRE_HOME%\lib\ext目录下的jar包和class文件；</li>
+<li><strong>应用程序（系统类）加载器 Application ClassLoader</strong>，主要负责加载当前应用的classpath下的所有类；</li>
+<li>这四级是通过组合方式实现的，不是继承。</li>
+</ul>
+<p>classLoader加载类的具体流程：</p>
+<ol>
+<li>类加载器收到类加载的请求（创建完class就会发送请求了）；</li>
+<li>将这个请求向上委托给父类加载器去完成（请求最开始在应用程序加载器Application ClassLoader，也就是自己编写的class的加载器），一直向上委托，直到启动类加载器（Bootstrap ClassLoader）；</li>
+<li>启动类加载器检查是否能够加载当前这个类，能够加载就结束，并使用此加载器，否则，抛出异常，并通知子加载器进行加载；</li>
+<li>重复步骤3，若所有加载器都没能加载此类，则会抛出异常：Class Not Found。</li>
+</ol>
+<p>null的含义：</p>
+<ul>
+<li>此类不存在；</li>
+<li>此类java调用不到。（但C和C++能够调用，因此有些java调用不到的东西会用native关键字，让C++去调用）</li>
+<li>java实际上是C++–，去掉了C中的指针，和内存管理（java中全都交给了虚拟机jvm）。</li>
+</ul>
+<h3 id="双亲委派机制"><a href="#双亲委派机制" class="headerlink" title="双亲委派机制"></a>双亲委派机制</h3><ul>
+<li>检查顺序从下至上，加载顺序从上到下；</li>
+<li>如果一个类加载器需要加载类，那么首先它会把这个类请求委派给父类加载器去完成，每一层都是如此；</li>
+<li>一直递归到顶层，当父加载器无法完成这个请求时，子类才会尝试去加载。</li>
+</ul>
+<p>例子：自定义java.lang.String类，并编写main方法，执行类的实例化并调用toString方法：</p>
+<p>会出现报错：String类中无法执行main函数。</p>
+<p>原因：编写了String.class后，执行的是Bootstrap根加载器，因为根加载器中有String类，能够加载，因此不会加载我们自己写的String.class（即Application ClassLoader）。</p>
+<p><strong>双亲委派机制的目的：为了安全，不让用户自行修改java默认的文件；同时避免类的重复加载。</strong></p>
+<ul>
+<li>通过委派的方式，可以避免类的重复加载，当父加载器已经加载过某一个类时，子加载器就不会再重新加载这个类；</li>
+<li>通过双亲委派的方式，还保证了安全性。因为Bootstrap ClassLoader在加载的时候，只会加载JAVA_HOME中的jar包里面的类，如java.lang.String，那么这个类是不会被随意替换的，除非有人跑到你的机器上， 破坏你的JDK。那么，就可以避免有人自定义一个有破坏功能的java.lang.String被加载。这样可以有效的防止核心Java API被篡改。</li>
+</ul>
+<h3 id="沙箱安全机制"><a href="#沙箱安全机制" class="headerlink" title="沙箱安全机制"></a>沙箱安全机制</h3><ul>
+<li><p>控制远程代码执行的权限；</p>
+</li>
+<li><p>jdk1.6之后的域；</p>
+</li>
+<li><p>为了保证安全。</p>
+</li>
+</ul>
+<h2 id="5-native"><a href="#5-native" class="headerlink" title="5. native"></a>5. native</h2><ul>
+<li><strong>包含native关键字的方法，说明java的作用范围拿不到了，会去调用底层c语言的库；</strong></li>
+<li><strong>会进入本地方法栈（native method stack）</strong>，即会把该方法的地址放入栈中，程序运行到此方法时，找到对应地址，并调用本地方法的接口，进行方法的执行；</li>
+<li><strong>调用本地方法接口JNI（java native inferface）；</strong></li>
+<li>JNI作用：扩展java的使用，融合不同的编程语言为java所用。 最初：c、c++盛行，java出现了必须要能够有调用c的接口才能被打架使用；</li>
+<li>它在内存区域中专门开辟了一块标记区域（本地方法栈 native method stack），登记native方法；</li>
+<li>在最终执行的时候，通过JNI加载本地方法库中的方法</li>
+</ul>
+<h2 id="6-pc寄存器"><a href="#6-pc寄存器" class="headerlink" title="6. pc寄存器"></a>6. pc寄存器</h2><p>线程私有，保证线程顺序。即每个线程会有各自的寄存器，并进行计数。</p>
+<h2 id="7-方法区"><a href="#7-方法区" class="headerlink" title="7. 方法区"></a>7. 方法区</h2><ul>
+<li>方法区是被所有线程共享的，所有的字段和方法字节码，以及一些特殊方法，如构造函数，接口代码也在此定义，简单说，所有定义方法的信息都保存在该区域，此区域属于共享空间；</li>
+<li><strong>静态变量，常量，类信息（构造方法，接口定义），运行时的常量池都存在方法区中，但是实例变量都是在堆内存中，和方法区无关。</strong></li>
+</ul>
+<p>存储内容：static、final、.class、常量池</p>
+<p>面试题：对象加载（实例化）的示意图。</p>
+<ol>
+<li>要画出 堆 栈 方法区；</li>
+<li>创建一个类的时候，会先在方法区中生成一个类的模板，同时将一些常量写进常量池中；</li>
+<li>生成对象时，将引用存放在栈中，并将真实的地址（包括该对象的属性和方法）放入堆中；</li>
+<li>通过引用指向真实的对象；</li>
+<li>对象中的常量属性从常量池中获取（如果有的话）。</li>
+</ol>
+<h2 id="8-栈"><a href="#8-栈" class="headerlink" title="8. 栈"></a>8. 栈</h2><ul>
+<li>先进后出；</li>
+<li>思考：为什么main先执行，最后结束：<ul>
+<li>每次调用方法，都会压栈，当超出了栈的内存时，就会栈溢出；</li>
+</ul>
+</li>
+<li>栈主管程序的运行，<strong>栈的生命周期和线程同步，线程结束了，栈就释放了</strong>；</li>
+<li><strong>栈不存在垃圾回收问题</strong>（如果有垃圾程序就都塞住了）；</li>
+<li><strong>存储：8大基本类型 + 对象引用（地址） + 实例的方法。</strong></li>
+</ul>
+<h2 id="9-堆"><a href="#9-堆" class="headerlink" title="9. 堆"></a>9. 堆</h2><p>Heap，一个JVM只有一个堆内存，堆内存的大小是可以调节的。</p>
+<p>堆内存划分：</p>
+<ol>
+<li>新生区 ：Eden（伊甸园区）、S0（幸存0区）、S1（幸存1区）。<ul>
+<li>对象在新生区诞生、成长、甚至死亡；</li>
+<li>Eden：所有对象都是在eden区new出来的。</li>
+</ul>
+</li>
+<li>老年区</li>
+<li>永久区：这个区域是常驻内存的，用来存放jdk自身携带的class对象。</li>
+</ol>
+<p>堆中存放的内容：具体的对象（包括属性，方法…）</p>
+<p>如果堆的内存满了，会出现OOM（堆内存不够），java heap space</p>
+<h3 id="新生区，老年区"><a href="#新生区，老年区" class="headerlink" title="新生区，老年区"></a>新生区，老年区</h3><p><img src="/2023/02/27/JVM/1921676-20201007095129938-1764168219.png"></p>
+<h3 id="永久区"><a href="#永久区" class="headerlink" title="永久区"></a>永久区</h3><ul>
+<li>这个区域是常驻内存的；用来存放JDK自身携带的Class对象，Interface元数据，存储的是Java运行时的一些环境或类信息；</li>
+<li>这个区域不存在垃圾回收！关闭VM虚拟就会释放这个区域的内存~</li>
+<li>若一个启动类加载了大量的第三方jar包，或Tomcat部署了太多的应用，或大量动态生成的反射类，不断的被加载，直到内存满，就会出现OOM;</li>
+<li>演变：<ul>
+<li>jdk1.6之前：有永久区，且常量池是在方法区；</li>
+<li>jdk1.7：有永久区，但是慢慢的退化了，常量池在堆中；</li>
+<li><strong>jdk1.8之后：无永久区（改叫元空间），常量池在方法区，方法区在元空间</strong>。</li>
+</ul>
+</li>
+</ul>
+<h3 id="堆内存调优"><a href="#堆内存调优" class="headerlink" title="堆内存调优"></a>堆内存调优</h3><p>出现了OOM溢出：</p>
+<ol>
+<li><strong>尝试扩大堆内存看结果；如-Xms1024m -Xmx1024m</strong> -XX:+PrintGCDetails</li>
+<li>分析内存，看一下哪个地方出了问题；</li>
+<li><strong>扩大内存无果，分析排错：如-Xms1024m -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError，导出dump文件；</strong></li>
+<li><strong>用jprofier工具看，是哪个文件太大导致的溢出，是哪一行的操作导致了溢出（点击Thread）；</strong></li>
+<li>进行修改。</li>
+</ol>
+<p>在一个项目中，突然出现了OOM故障，那么该如何排除？研究为什么出错</p>
+<ul>
+<li>能够看到代码第几行出错：内存快照分析工具：MAT，jprofier</li>
+<li>debug，一行一行看（不现实）</li>
+</ul>
+<p>MAT，jprofiler作用：</p>
+<ul>
+<li>分析dump内存文件，快速定位内存溢出的位置；</li>
+<li>获得堆中的数据；</li>
+<li>获得大的对象。</li>
+</ul>
+<p>调优指令：</p>
+<ul>
+<li>-Xms：设置初始化内存分配大小，默认为电脑内存的1&#x2F;64；</li>
+<li>-Xmx：设置最大分配内存，默认为电脑内存的1&#x2F;4；</li>
+<li>-XX:+PrintGCDetails：打印GC垃圾回收的相关信息；</li>
+<li>-XX:+HeapDumpOnOutOfMemoryError：导出dump文件，可以用jprofiler查看，快速定位内存溢出的位置。</li>
+</ul>
+<p>如：-Xms1m -Xmx8m -XX:+PrintGCDetails</p>
+<ul>
+<li>通常养老区的内存占堆中内存的2&#x2F;3；</li>
+<li>新生区占1&#x2F;3，新生区中，Edan区占8成，为8：1：1。</li>
+</ul>
+<h2 id="10-GC-垃圾回收机制"><a href="#10-GC-垃圾回收机制" class="headerlink" title="10. GC 垃圾回收机制"></a>10. GC 垃圾回收机制</h2><h3 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a><strong>引用计数法</strong></h3><p>记录每个对象的引用次数，长时间没有被引用的对象就被清除掉。</p>
+<p><img src="/2023/02/27/JVM/image-20230227165205054.png"></p>
+<p>引用计数法一般很少用，因为太麻烦了，而且对象通常很多，影响效率。</p>
+<h3 id="复制算法"><a href="#复制算法" class="headerlink" title="复制算法"></a>复制算法</h3><p>GC时的新生区流程：</p>
+<ol>
+<li><strong>每次GC，都会将Eden区的幸存者（没有清除掉）会移动到幸存区，具体是移动到to区；</strong></li>
+<li>（一旦Eden区被GC，Eden区就是空的；）</li>
+<li><strong>from区的幸存者移动到to区；</strong></li>
+<li><strong>to区变成from区，from区变成to区；（to区要保证一定是空的）</strong></li>
+<li>当一个对象经过了15次GC后（默认是15，可以更改：–XX:MaxTenuringThreshold&#x3D;进入老年代的时间）依然存活，则进入到养老区。</li>
+</ol>
+<p><strong>步骤3、4就是复制算法，即将from区的幸存者移动到to区，同时两个区交换。</strong></p>
+<p><img src="/2023/02/27/JVM/1921676-20201007095228743-178776641.png"></p>
+<ul>
+<li>复制算法的好处：没有内存碎片（就是指<strong>每次GC后，幸存者都在from区，Eden和to区都是空的</strong>，没有这里一点，那里一点）；</li>
+<li>复制算法的坏处：浪费内存空间，多了一半的内存（to空间永远是空的）；</li>
+<li>复制算法最佳使用场景：对象存活度较低的时候 -&gt; 也就是<strong>新生区</strong>。</li>
+</ul>
+<h3 id="标记清除算法"><a href="#标记清除算法" class="headerlink" title="标记清除算法"></a>标记清除算法</h3><p><img src="/2023/02/27/JVM/1921676-20201007095254509-1476258044.png"></p>
+<ul>
+<li>优点：不需要额外的空间。</li>
+<li>缺点：两次扫描，严重浪费时间，会产生内存碎片。</li>
+</ul>
+<p>改进：</p>
+<ul>
+<li><strong>标记压缩算法：</strong>再进行一次扫描，进行压缩，向一段移动活着的对象，防止内存碎片的产生；</li>
+<li>但是会多出一次扫描，浪费时间；</li>
+<li>三者结合，比如进行五次标记清除，再进行一次压缩，但本质上还是没有改变。</li>
+</ul>
+<h3 id="GC总结"><a href="#GC总结" class="headerlink" title="GC总结"></a>GC总结</h3><ul>
+<li>内存效率：复制算法&gt;标记清除算法&gt;标记压缩算法(时间复杂度)</li>
+<li>内存整齐度：复制算法&#x3D;标记压缩算法&gt;标记清除算法</li>
+<li>内存利用率：标记压缩算法&#x3D;标记清除算法&gt;复制算法</li>
+</ul>
+<p>思考一个问题:难道没有最优算法吗?<br>答案：没有，没有最好的算法，只有最合适的算法—–&gt; GC:分代收集算法</p>
+<p>年轻代：</p>
+<ul>
+<li>存活率低；</li>
+<li>考虑复制算法。</li>
+</ul>
+<p>老年代：</p>
+<ul>
+<li>区域大：存活率高；</li>
+<li>考虑标记清除＋标记压缩混合实现。（这个比例可以通过调优得到最佳值）</li>
+</ul>
+<h2 id="11-JMM"><a href="#11-JMM" class="headerlink" title="11. JMM"></a>11. JMM</h2><ul>
+<li>JMM：（Java Memory Model的缩写）指java内存模型；</li>
+<li>作用：<strong>是缓存一致性协议，用于定义数据读写的规则，保证线程的安全</strong>；</li>
+<li>JMM定义了线程工作内存和主内存之间的抽象关系：线程之间的共享变量存储在主内存(Main Memory)中，每个线程都有一个私有的本地内存(Local Memory)</li>
+</ul>
+<p><img src="/2023/02/27/JVM/image-20230227193606976.png"></p>
+<p>但是每一个线程更改变量（做出操作）是不可见的，因此要保证线程的一致性，也就是一旦执行了操作，就更新主内存：</p>
+<ul>
+<li>解决共享对象可见性：volilate</li>
+<li>volilate：能够保证可见性和消除指令重排，但不会保证原子性。</li>
+</ul>
+<p>具体的，JMM对制定了如下规则：</p>
+<ul>
+<li><p>不允许read和load、store和write操作之一单独出现。即使用了read必须load，使用了store必须write；</p>
+</li>
+<li><p>允许线程丢弃他最近的assign操作，即工作变量的数据改变了之后，必须告知主存；</p>
+</li>
+<li><p>不允许一个线程将没有assign的数据从工作内存同步回主内存；</p>
+</li>
+<li><p>一个新的变量必须在主内存中诞生，不允许工作内存直接使用一个未被初始化的变量。就是对变量实施use.store操作之前，必须经过assign和load操作；</p>
+</li>
+<li><p>一个变量同一时间只有一个线程能对其进行lock。多次lock后，必须执行相同次数的unlock才能解锁，如果对一个变量进行lock操作，会清空所有工作内存中此变量的值，在执行引擎使用这个变量前，必须重新load或assign操作初始化变量的值；</p>
+</li>
+<li><p>如果一个变量没有被lock，就不能对其进行unlock操作。也不能unlock一个被其他线程锁住的变量对一个变量进行unlock操作之前，必须把此变量同步回主内存</p>
+</li>
+</ul>
+<p>JMM对这八种操作规则和对volatile的一些特殊规则就能确定哪里操作是线程安全，哪些操作是线程不安全的了。但是这些规则实在复杂，很难在实践中直接分析。所以一般我们也不会通过上述规则进行分析。更多的时候。使用java的happen-before规则来进行分析。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>JVM</p><p><a href="http://example.com/2023/02/27/JVM/">http://example.com/2023/02/27/JVM/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Zehao Tian</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2023-02-27</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2023-02-27</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/jvm/">jvm</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2023/02/27/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="level-item">设计模式</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="https://octodex.github.com/images/jetpacktocat.png" alt="田泽豪"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">田泽豪</p><p class="is-size-6 is-block">越努力，越幸运</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HUST</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">52</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">20</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zehtian" target="_blank" rel="noopener">关注我</a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#1-面试问题"><span class="level-left"><span class="level-item">1</span><span class="level-item">1. 面试问题</span></span></a></li><li><a class="level is-mobile" href="#2-jvm的位置"><span class="level-left"><span class="level-item">2</span><span class="level-item">2. jvm的位置</span></span></a></li><li><a class="level is-mobile" href="#3-jvm的体系结构"><span class="level-left"><span class="level-item">3</span><span class="level-item">3. jvm的体系结构</span></span></a></li><li><a class="level is-mobile" href="#4-类加载器"><span class="level-left"><span class="level-item">4</span><span class="level-item">4. 类加载器</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#双亲委派机制"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">双亲委派机制</span></span></a></li><li><a class="level is-mobile" href="#沙箱安全机制"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">沙箱安全机制</span></span></a></li></ul></li><li><a class="level is-mobile" href="#5-native"><span class="level-left"><span class="level-item">5</span><span class="level-item">5. native</span></span></a></li><li><a class="level is-mobile" href="#6-pc寄存器"><span class="level-left"><span class="level-item">6</span><span class="level-item">6. pc寄存器</span></span></a></li><li><a class="level is-mobile" href="#7-方法区"><span class="level-left"><span class="level-item">7</span><span class="level-item">7. 方法区</span></span></a></li><li><a class="level is-mobile" href="#8-栈"><span class="level-left"><span class="level-item">8</span><span class="level-item">8. 栈</span></span></a></li><li><a class="level is-mobile" href="#9-堆"><span class="level-left"><span class="level-item">9</span><span class="level-item">9. 堆</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#新生区，老年区"><span class="level-left"><span class="level-item">9.1</span><span class="level-item">新生区，老年区</span></span></a></li><li><a class="level is-mobile" href="#永久区"><span class="level-left"><span class="level-item">9.2</span><span class="level-item">永久区</span></span></a></li><li><a class="level is-mobile" href="#堆内存调优"><span class="level-left"><span class="level-item">9.3</span><span class="level-item">堆内存调优</span></span></a></li></ul></li><li><a class="level is-mobile" href="#10-GC-垃圾回收机制"><span class="level-left"><span class="level-item">10</span><span class="level-item">10. GC 垃圾回收机制</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#引用计数法"><span class="level-left"><span class="level-item">10.1</span><span class="level-item">引用计数法</span></span></a></li><li><a class="level is-mobile" href="#复制算法"><span class="level-left"><span class="level-item">10.2</span><span class="level-item">复制算法</span></span></a></li><li><a class="level is-mobile" href="#标记清除算法"><span class="level-left"><span class="level-item">10.3</span><span class="level-item">标记清除算法</span></span></a></li><li><a class="level is-mobile" href="#GC总结"><span class="level-left"><span class="level-item">10.4</span><span class="level-item">GC总结</span></span></a></li></ul></li><li><a class="level is-mobile" href="#11-JMM"><span class="level-left"><span class="level-item">11</span><span class="level-item">11. JMM</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://hexo.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Hexo</span></span><span class="level-right"><span class="level-item tag">hexo.io</span></span></a></li><li><a class="level is-mobile" href="https://bulma.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Bulma</span></span><span class="level-right"><span class="level-item tag">bulma.io</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/MyBatis/"><span class="level-start"><span class="level-item">MyBatis</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/MySQL/"><span class="level-start"><span class="level-item">MySQL</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/categories/Redis/"><span class="level-start"><span class="level-item">Redis</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/Spring/"><span class="level-start"><span class="level-item">Spring</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/SpringBoot/"><span class="level-start"><span class="level-item">SpringBoot</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/SpringCloud/"><span class="level-start"><span class="level-item">SpringCloud</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/SpringMVC/"><span class="level-start"><span class="level-item">SpringMVC</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/java/"><span class="level-start"><span class="level-item">java</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li><li><a class="level is-mobile" href="/categories/web%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">web基础</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"><span class="level-start"><span class="level-item">数据结构与算法</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">机器学习</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">编程基础</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="level-start"><span class="level-item">论文写作</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="level-start"><span class="level-item">论文阅读笔记</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-27T12:42:01.000Z">2023-02-27</time></p><p class="title"><a href="/2023/02/27/JVM/">JVM</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-27T12:41:49.000Z">2023-02-27</time></p><p class="title"><a href="/2023/02/27/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-24T13:17:51.000Z">2023-02-24</time></p><p class="title"><a href="/2023/02/24/java%E6%96%B9%E6%B3%95/">java方法</a></p><p class="categories"><a href="/categories/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/">编程基础</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-24T13:17:21.000Z">2023-02-24</time></p><p class="title"><a href="/2023/02/24/%E7%AE%97%E6%B3%95/">算法</a></p><p class="categories"><a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-24T13:17:13.000Z">2023-02-24</time></p><p class="title"><a href="/2023/02/24/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构基础</a></p><p class="categories"><a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2023/02/"><span class="level-start"><span class="level-item">二月 2023</span></span><span class="level-end"><span class="level-item tag">27</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">15</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/JDBC/"><span class="tag">JDBC</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MyBatis/"><span class="tag">MyBatis</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MySQL/"><span class="tag">MySQL</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Redis/"><span class="tag">Redis</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Spring/"><span class="tag">Spring</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringBoot/"><span class="tag">SpringBoot</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringCloud/"><span class="tag">SpringCloud</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringMVC/"><span class="tag">SpringMVC</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/html/"><span class="tag">html</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/java/"><span class="tag">java</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/jvm/"><span class="tag">jvm</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/python/"><span class="tag">python</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%85%83%E5%AD%A6%E4%B9%A0/"><span class="tag">元学习</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%88%90%E5%91%98%E6%8E%A8%E6%96%AD%E6%94%BB%E5%87%BB/"><span class="tag">成员推断攻击</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"><span class="tag">数据结构与算法</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/"><span class="tag">机器学习基础</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%81%94%E9%82%A6%E5%AD%A6%E4%B9%A0/"><span class="tag">联邦学习</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="tag">论文写作</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="tag">论文阅读笔记</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="tag">设计模式</span><span class="tag">1</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Blackpride</a><p class="is-size-7"><span>&copy; 2023 Zehao Tian</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

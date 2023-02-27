@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>SpringCloud - 田泽豪的学习笔记</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="田泽豪的学习笔记"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="田泽豪的学习笔记"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本系列主要进行SpringCloud框架的学习介绍，Spring Cloud是一个微服务框架的规范，注意，只是规范，他不是任何具体的框架。所以说SpringCloud是各个微服务架构落地技术的集合体, 俗称微服务全家桶；Spring Cloud是一系列框架的有序集合。它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、"><meta property="og:type" content="blog"><meta property="og:title" content="SpringCloud"><meta property="og:url" content="http://example.com/2023/02/24/SpringCloud/"><meta property="og:site_name" content="田泽豪的学习笔记"><meta property="og:description" content="本系列主要进行SpringCloud框架的学习介绍，Spring Cloud是一个微服务框架的规范，注意，只是规范，他不是任何具体的框架。所以说SpringCloud是各个微服务架构落地技术的集合体, 俗称微服务全家桶；Spring Cloud是一系列框架的有序集合。它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://example.com/2023/02/24/SpringCloud/dubbo.png"><meta property="og:image" content="http://example.com/2023/02/24/SpringCloud/ribbon1.png"><meta property="og:image" content="http://example.com/2023/02/24/SpringCloud/ribbon2.png"><meta property="article:published_time" content="2023-02-24T12:58:02.000Z"><meta property="article:modified_time" content="2023-02-24T13:14:40.677Z"><meta property="article:author" content="Zehao Tian"><meta property="article:tag" content="SpringCloud"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/2023/02/24/SpringCloud/dubbo.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/02/24/SpringCloud/"},"headline":"SpringCloud","image":["http://example.com/2023/02/24/SpringCloud/dubbo.png","http://example.com/2023/02/24/SpringCloud/ribbon1.png","http://example.com/2023/02/24/SpringCloud/ribbon2.png"],"datePublished":"2023-02-24T12:58:02.000Z","dateModified":"2023-02-24T13:14:40.677Z","author":{"@type":"Person","name":"Zehao Tian"},"publisher":{"@type":"Organization","name":"田泽豪的学习笔记","logo":{"@type":"ImageObject","url":{"text":"Blackpride"}}},"description":"本系列主要进行SpringCloud框架的学习介绍，Spring Cloud是一个微服务框架的规范，注意，只是规范，他不是任何具体的框架。所以说SpringCloud是各个微服务架构落地技术的集合体, 俗称微服务全家桶；Spring Cloud是一系列框架的有序集合。它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、"}</script><link rel="canonical" href="http://example.com/2023/02/24/SpringCloud/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Blackpride</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2023-02-24T12:58:02.000Z" title="2023/2/24 20:58:02">2023-02-24</time>发表</span><span class="level-item"><time dateTime="2023-02-24T13:14:40.677Z" title="2023/2/24 21:14:40">2023-02-24</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/SpringCloud/">SpringCloud</a></span><span class="level-item">1 小时读完 (大约7058个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">SpringCloud</h1><div class="content"><p>本系列主要进行SpringCloud框架的学习介绍，Spring Cloud是一个微服务框架的规范，注意，只是规范，他不是任何具体的框架。所以说<strong>SpringCloud是各个微服务架构落地技术的集合体,</strong> 俗称微服务全家桶；<strong>Spring Cloud是一系列框架的有序集合。</strong>它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用Spring Boot的开发风格做到一键启动和部署。</p>
+<span id="more"></span>
+
+
+
+<h2 id="1-微服务概述"><a href="#1-微服务概述" class="headerlink" title="1. 微服务概述"></a>1. 微服务概述</h2><h3 id="1-1-什么是微服务？"><a href="#1-1-什么是微服务？" class="headerlink" title="1.1 什么是微服务？"></a>1.1 什么是微服务？</h3><ul>
+<li><p>微服务(Microservice Architecture) 是近几年流行的一种架构思想, 或者说是一种架构风格，</p>
+</li>
+<li><p><strong>将单一的应用程序划分成一组小的服务，每个服务运行在其独立的自己的进程内，服务之间互相协调，互相配置，为用户提供最终价值;</strong></p>
+</li>
+<li><p>服务之间采用轻量级的通信机制(HTTP)互相沟通，每个服务都围绕着具体的业务进行构建，并且能够被独立的部署到生产环境中;</p>
+</li>
+<li><p>对具体的一个服务而言，应该根据业务上下文，选择合适的语言，工具(Maven), 对其进行构建，可以有一个非常轻量级的集中式管理来协调这些服务，可以使用不同的语言来编写服务，也可以使用不同的数据存储。</p>
+</li>
+<li><p>微服务化的核心就是将传统的一站式应用，根据业务拆分成一个一个的服务，彻底地去耦合，每一个微服务提供单个业务功能的服务，一个服务做一件事情，从技术角度看就是一种小而独立的处理过程，类似进程的概念，能够自行单独启动或销毁，拥有自己独立的数据库。</p>
+</li>
+</ul>
+<h3 id="1-2-微服务与微服务架构"><a href="#1-2-微服务与微服务架构" class="headerlink" title="1.2 微服务与微服务架构"></a>1.2 微服务与微服务架构</h3><p><strong>微服务:</strong></p>
+<p>微服务关注的是某一个点，是具体解决某一个问题&#x2F;提供落地对应服务的一个服务应用，狭义的看，可以看作是IDEA中的一个个微服务工程，或者Moudle。IDEA 工具里面使用Maven开发的一个个独立的小Moudle，它具体是使用SpringBoot开发的一个小模块，专业的事情交给专业的模块来做，一个模块就做着一件事情。强调的是一个个的个体，每个个体完成一个具体的任务或者功能。</p>
+<p><strong>微服务架构:</strong></p>
+<p>微服务架构是一种架构模式，即将各个微服务结合到一起的架构模式。具体的, 将单一应用程序划分成一组小的服务，服务之间相互协调，互相配合，为用户提供最终价值。每个服务运行在其独立的进程中，服务与服务之间采用轻量级的通信机制(如HTTP)互相协作，每个服务都围绕着具体的业务进行构建，并且能够被独立的部署到生产环境中，对具体的一个服务而言，应根据业务上下文，选择合适的语言、工具(如Maven)对其进行构建。</p>
+<h3 id="1-3-微服务优缺点"><a href="#1-3-微服务优缺点" class="headerlink" title="1.3 微服务优缺点"></a>1.3 微服务优缺点</h3><p><strong>优点:</strong> </p>
+<ol>
+<li>单一职责原则；</li>
+<li>每个服务足够内聚，足够小，代码容易理解，这样能聚焦一个指定的业务功能或业务需求；</li>
+<li>开发简单，开发效率高，一个服务可能就是专一的只干一件事；</li>
+<li>微服务能够被小团队单独开发，这个团队只需2-5个开发人员组成, 易于修改和维护；</li>
+<li>微服务是松耦合的，是有功能意义的服务，无论是在开发阶段或部署阶段都是独立的；</li>
+<li>微服务只是业务逻辑的代码，不会和HTML，CSS，或其他的界面混合;</li>
+<li>每个微服务都有自己的存储能力，可以有自己的数据库，也可以有统一的数据库.</li>
+</ol>
+<p><strong>缺点:</strong></p>
+<ol>
+<li>开发人员要处理分布式系统的复杂性；</li>
+<li>多服务运维难度，随着服务的增加，运维的压力也在增大；</li>
+<li>系统部署依赖问题；</li>
+<li>服务间通信成本问题；</li>
+<li>数据一致性问题；</li>
+<li>系统集成测试问题；</li>
+<li>性能和监控问题.</li>
+</ol>
+<h3 id="1-4-微服务技术栈有那些？"><a href="#1-4-微服务技术栈有那些？" class="headerlink" title="1.4 微服务技术栈有那些？"></a>1.4 微服务技术栈有那些？</h3><table>
+<thead>
+<tr>
+<th align="center">微服务技术条目</th>
+<th align="center">落地技术</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">服务开发</td>
+<td align="center">Spring、SpringMVC、SpringBoot等</td>
+</tr>
+<tr>
+<td align="center">服务配置与管理</td>
+<td align="center">Netfix公司的Archaius、阿里的Diamond等</td>
+</tr>
+<tr>
+<td align="center">服务注册与发现</td>
+<td align="center">Eureka、Consul、Zookeeper等</td>
+</tr>
+<tr>
+<td align="center">服务熔断器</td>
+<td align="center">Hystrix、Envoy等</td>
+</tr>
+<tr>
+<td align="center">服务调用</td>
+<td align="center">Rest、PRC、gRPC</td>
+</tr>
+<tr>
+<td align="center">负载均衡</td>
+<td align="center">Ribbon、Nginx等</td>
+</tr>
+<tr>
+<td align="center">消息队列</td>
+<td align="center">Kafka、RabbitMQ、ActiveMQ等</td>
+</tr>
+<tr>
+<td align="center">服务路由(API网关)</td>
+<td align="center">Zuul等</td>
+</tr>
+<tr>
+<td align="center">服务部署</td>
+<td align="center">Docker、OpenStack、Kubernetes等</td>
+</tr>
+<tr>
+<td align="center">服务配置中心管理</td>
+<td align="center">SpringCloudConfig、Chef等</td>
+</tr>
+</tbody></table>
+<h3 id="1-5-为什么选择SpringCloud作为微服务架构"><a href="#1-5-为什么选择SpringCloud作为微服务架构" class="headerlink" title="1.5 为什么选择SpringCloud作为微服务架构"></a>1.5 为什么选择SpringCloud作为微服务架构</h3><ol>
+<li>完整的微服务框架	</li>
+<li>支持Rest	</li>
+<li>支持多语言(Rest形式)</li>
+<li>负载均衡(服务端zuul+客户端Ribbon)</li>
+<li>配置服务(Netfix Archaius，Spring Cloud Config Server 集中配置)	</li>
+<li>服务调用链监控(zuul提供边缘服务，API网关)	</li>
+<li>高可用&#x2F;容错(服务端Hystrix+客户端Ribbon)</li>
+</ol>
+<h2 id="2-SpringCloud入门"><a href="#2-SpringCloud入门" class="headerlink" title="2. SpringCloud入门"></a>2. SpringCloud入门</h2><h3 id="2-1-什么是SpringCloud"><a href="#2-1-什么是SpringCloud" class="headerlink" title="2.1 什么是SpringCloud"></a>2.1 什么是SpringCloud</h3><ul>
+<li>Spring Cloud是一个微服务框架的规范，注意，只是规范，他不是任何具体的框架。所以说<strong>SpringCloud是各个微服务架构落地技术的集合体,</strong> 俗称微服务全家桶。</li>
+<li><strong>Spring Cloud是一系列框架的有序集合。</strong>它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用Spring Boot的开发风格做到一键启动和部署。</li>
+</ul>
+<h3 id="2-2-SpringCloud五大组件"><a href="#2-2-SpringCloud五大组件" class="headerlink" title="2.2 SpringCloud五大组件"></a>2.2 SpringCloud五大组件</h3><ul>
+<li><p>服务注册与发现——Netflix <strong>Eureka</strong></p>
+</li>
+<li><p>负载均衡：</p>
+<ul>
+<li>客户端负载均衡——Netflix <strong>Ribbon</strong></li>
+<li>服务端负载均衡：——Feign(其也是依赖于Ribbon，只是将调用方式RestTemplete 更改成Service 接口)</li>
+</ul>
+</li>
+<li><p>断路器——Netflix <strong>Hystrix</strong></p>
+</li>
+<li><p>服务网关——Netflix <strong>Zuul</strong></p>
+</li>
+<li><p>分布式配置——<strong>SpringCloud Config</strong></p>
+</li>
+</ul>
+<h3 id="2-3-SpringCloud和SpringBoot的关系"><a href="#2-3-SpringCloud和SpringBoot的关系" class="headerlink" title="2.3 SpringCloud和SpringBoot的关系"></a>2.3 SpringCloud和SpringBoot的关系</h3><ul>
+<li><p>SpringBoot专注于开发,  方便的开发<strong>单个个体微服务</strong>；SpringCloud是关注<strong>全局的微服务协调整理治理框架</strong>，它<strong>将SpringBoot开发的一个个单体微服务，整合并管理起来，为各个微服务之间提供各种集成服务</strong>；</p>
+</li>
+<li><p>SpringBoot可以离开SpringCloud独立使用，开发项目，但SpringCloud离不开SpringBoot，属于依赖关系；</p>
+</li>
+</ul>
+<h3 id="2-4-Spring-Cloud和Dubbo的关系"><a href="#2-4-Spring-Cloud和Dubbo的关系" class="headerlink" title="2.4 Spring Cloud和Dubbo的关系"></a>2.4 Spring Cloud和Dubbo的关系</h3><ul>
+<li>Dubbo是基于RPC调用的，而Spring Cloud是基于HTTP的REST方式，所以效率上是Dubbo更快; 但REST避免了原生RPC的问题, 同时相比RPC更为灵活，服务提供方和调用方的依赖只依靠一纸契约，不存在代码级别的强依赖;</li>
+<li>Dubbo的组件不是很齐全，很多功能比如服务注册与发现, 需要借助于类似Zookeeper等组件才能实现，而<strong>Spring Cloud则是提供了一站式解决方案。</strong></li>
+</ul>
+<h3 id="2-5-SpringCloud工程搭建方式"><a href="#2-5-SpringCloud工程搭建方式" class="headerlink" title="2.5 SpringCloud工程搭建方式"></a>2.5 SpringCloud工程搭建方式</h3><ul>
+<li>两种方式: 创建一个父工程SpringCloud, 在其中创建 服务器Server模块 和 各个微服务Client模块; </li>
+<li>创建一个Project为Server, 其余的Client为Moudule, 但其实Server与Client模块也是独立的, 即创建Client的Moudule没有父工程. </li>
+<li>使用RestTemplete先需要放入Spring容器中</li>
+</ul>
+<h2 id="3-Eureka服务中心"><a href="#3-Eureka服务中心" class="headerlink" title="3. Eureka服务中心"></a>3. Eureka服务中心</h2><h3 id="3-1-什么是Eureka"><a href="#3-1-什么是Eureka" class="headerlink" title="3.1 什么是Eureka"></a>3.1 什么是Eureka</h3><p>作用：进行微服务的注册与发现。</p>
+<p>Eureka是Netflix的一个子模块，也是核心模块之一。Eureka是基于REST的服务，用于定位服务，以实现云端中间件层服务发现和故障转移，<strong>服务注册与发现</strong>对于微服务来说是非常重要的，<strong>有了服务注册与发现，只需要使用服务的标识符，就可以访问到服务，而不需要修改服务调用的配置文件了</strong>，功能类似于Dubbo的注册中心，比如Zookeeper。</p>
+<h3 id="3-2-Eureka的原理"><a href="#3-2-Eureka的原理" class="headerlink" title="3.2 Eureka的原理"></a>3.2 Eureka的原理</h3><h4 id="Eureka基本架构"><a href="#Eureka基本架构" class="headerlink" title="Eureka基本架构"></a>Eureka基本架构</h4><ul>
+<li>Springcloud 封装了Netflix公司开发的Eureka模块来实现服务注册与发现 (对比Zookeeper)；</li>
+<li>Eureka采用了C-S的架构设计，<strong>EurekaServer作为服务注册功能的服务器，他是服务注册中心</strong>；</li>
+<li>而系统中的其他微服务，<strong>使用Eureka的客户端连接到EurekaServer并维持心跳连接</strong>。这样系统的维护人员就可以通过EurekaServer来监控系统中各个微服务是否正常运行，Springcloud 的一些其他模块 (比如Zuul) 就可以通过EurekaServer来发现系统中的其他微服务，并执行相关的逻辑.</li>
+</ul>
+<h4 id="Eureka组件说明"><a href="#Eureka组件说明" class="headerlink" title="Eureka组件说明"></a>Eureka组件说明</h4><ul>
+<li>Eureka 包含两个组件：Eureka Server 和 Eureka Client；</li>
+<li>Eureka Server 提供服务注册，各个节点启动后，回在EurekaServer中进行注册，这样Eureka Server中的服务注册表中将会储存所有可用服务节点的信息，服务节点的信息可以在界面中直观的看到；</li>
+<li>Eureka Client 是一个Java客户端，用于简化EurekaServer的交互，客户端同时也具备一个内置的，使用轮询负载算法的负载均衡器。在应用启动后，将会向EurekaServer发送心跳 (默认周期为30秒) 。如果<strong>Eureka Server在多个心跳周期内没有接收到某个节点的心跳，EurekaServer将会从服务注册表中把这个服务节点移除掉</strong> (默认周期为90s)。</li>
+</ul>
+<h3 id="3-3-对比Dubbo"><a href="#3-3-对比Dubbo" class="headerlink" title="3.3 对比Dubbo"></a>3.3 对比Dubbo</h3><ul>
+<li><p>Dubbo架构：</p>
+<p><img src="/2023/02/24/SpringCloud/dubbo.png"></p>
+</li>
+<li><p><strong>三大角色</strong></p>
+<ul>
+<li><p>Eureka Server：提供服务的注册与发现</p>
+</li>
+<li><p>Service Provider：服务生产方，将自身服务注册到Eureka中，从而使服务消费方能狗找到</p>
+</li>
+<li><p>Service Consumer：服务消费方，从Eureka中获取注册服务列表，从而找到消费服务</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-4-Eureka自我保护机制"><a href="#3-4-Eureka自我保护机制" class="headerlink" title="3.4 Eureka自我保护机制"></a>3.4 Eureka自我保护机制</h3><ul>
+<li>内容：某时刻某一个微服务不可用，eureka不会立即清理，依旧会对该微服务的信息进行保存！</li>
+<li>使用场景：默认情况下，当eureka server在一定时间内没有收到实例的心跳，便会把该实例从注册表中删除（默认是90秒），但是，<strong>如果短时间内丢失大量的实例心跳，便会触发eureka server的自我保护机制</strong>，比如在开发测试时，需要频繁地重启微服务实例，但是我们很少会把eureka server一起重启（因为在开发过程中不会修改eureka注册中心），当一分钟内收到的心跳数大量减少时，会触发该保护机制。</li>
+</ul>
+<h3 id="3-5-Eureka使用方法"><a href="#3-5-Eureka使用方法" class="headerlink" title="3.5 Eureka使用方法"></a>3.5 Eureka使用方法</h3><p>对于服务端，在主启动类上添加注解@EnableEurekaServer</p>
+<p>对于客户端，在主启动类上添加注解@EnableEurekaClient</p>
+<h3 id="3-6-对比ZooKeeper"><a href="#3-6-对比ZooKeeper" class="headerlink" title="3.6 对比ZooKeeper"></a>3.6 对比ZooKeeper</h3><h4 id="CAP是什么"><a href="#CAP是什么" class="headerlink" title="CAP是什么?"></a>CAP是什么?</h4><ul>
+<li>C (Consistency) 强一致性</li>
+<li>A (Availability) 可用性</li>
+<li>P (Partition tolerance) 分区容错性</li>
+<li>CAP的三进二：CA、AP、CP</li>
+</ul>
+<h4 id="CAP理论的核心"><a href="#CAP理论的核心" class="headerlink" title="CAP理论的核心"></a>CAP理论的核心</h4><p>一个分布式系统不可能同时很好的满足一致性，可用性和分区容错性这三个需求，根据CAP原理，将NoSQL数据库分成了满足CA原则，满足CP原则和满足AP原则三大类：</p>
+<ol>
+<li>CA：单点集群，满足一致性，可用性的系统，通常可扩展性较差</li>
+<li>CP：满足一致性，分区容错的系统，通常性能不是特别高</li>
+<li>AP：满足可用性，分区容错的系统，通常可能对一致性要求低一些</li>
+</ol>
+<h4 id="Eureka和Zookeeper"><a href="#Eureka和Zookeeper" class="headerlink" title="Eureka和Zookeeper"></a>Eureka和Zookeeper</h4><p>Zookeeper 保证的是 CP —&gt; 满足一致性，分区容错的系统，通常性能不是特别高</p>
+<p><strong>当向注册中心查询服务列表时，我们可以容忍注册中心返回的是几分钟以前的注册信息，但不能接收服务直接down掉不可用。也就是说，服务注册功能对可用性的要求要高于一致性。</strong>但zookeeper会出现这样一种情况，当master节点因为网络故障与其他节点失去联系时，剩余节点会重新进行leader选举。问题在于，选举leader的时间太长，30-120s，且选举期间整个zookeeper集群是不可用的，这就导致在选举期间注册服务瘫痪。</p>
+<p>Eureka 保证的是 AP —&gt; 满足可用性，分区容错的系统，通常可能对一致性要求低一些</p>
+<p>Eureka看明白了这一点，因此在设计时就优先保证可用性。Eureka各个节点都是平等的，几个节点挂掉不会影响正常节点的工作，剩余的节点依然可以提供注册和查询服务。而Eureka的客户端在向某个Eureka注册时，如果发现连接失败，则会自动切换至其他节点，只要有一台Eureka还在，就能保住注册服务的可用性，只不过查到的信息可能不是最新的，除此之外，Eureka还有之中自我保护机制，如果在15分钟内超过85%的节点都没有正常的心跳，那么Eureka就认为客户端与注册中心出现了网络故障。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>Eureka可以很好的应对因网络故障导致部分节点失去联系的情况，而不会像zookeeper那样使整个注册服务瘫痪</p>
+<h2 id="4-Ribbon：负载均衡-基于客户端"><a href="#4-Ribbon：负载均衡-基于客户端" class="headerlink" title="4. Ribbon：负载均衡(基于客户端)"></a>4. Ribbon：负载均衡(基于客户端)</h2><h3 id="4-1-负载均衡以及Ribbon"><a href="#4-1-负载均衡以及Ribbon" class="headerlink" title="4.1 负载均衡以及Ribbon"></a>4.1 负载均衡以及Ribbon</h3><ul>
+<li><strong>Ribbon</strong> 是 Netflix 发布的开源项目，<strong>主要功能是提供客户端的软件负载均衡算法，将 Netflix 的中间层服务连接在一起</strong>；</li>
+<li>Ribbon 的客户端组件提供一系列完整的配置项，如：连接超时、重试等。通过设置配置文件，Ribbon 会自动的帮助你基于某种规则 (如简单轮询，随机连接等等) 去连接这些机器；</li>
+<li>LB，即负载均衡 (LoadBalancer) ，在微服务或分布式集群中经常用的一种应用。<strong>负载均衡简单的说就是将用户的请求平摊的分配到多个服务上，从而达到系统的HA (高用)。</strong></li>
+<li>大多用于多集群服务的情况下（即Eureka集群的情况，拥有多个服务提供者）。</li>
+</ul>
+<p>集群服务如：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从三个注册中心中随机取一个去访问</span></span><br><span class="line"><span class="attr">eureka.client.service-url.defaultZone</span> = <span class="string">http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2023/02/24/SpringCloud/ribbon1.png"></p>
+<h3 id="4-2-负载均衡实现流程图"><a href="#4-2-负载均衡实现流程图" class="headerlink" title="4.2 负载均衡实现流程图"></a>4.2 负载均衡实现流程图</h3><p><img src="/2023/02/24/SpringCloud/ribbon2.png"></p>
+<h2 id="5-Feign：负载均衡-基于服务端"><a href="#5-Feign：负载均衡-基于服务端" class="headerlink" title="5. Feign：负载均衡(基于服务端)"></a>5. Feign：负载均衡(基于服务端)</h2><h3 id="5-1-Feign简介"><a href="#5-1-Feign简介" class="headerlink" title="5.1 Feign简介"></a>5.1 Feign简介</h3><ul>
+<li>Feign是声明式Web Service客户端，它让微服务之间的调用变得更简单，类似controller调用service。SpringCloud集成了Ribbon和Eureka，可以使用Feigin提供负载均衡的http客户端；</li>
+<li>只需要创建一个接口，然后添加注解即可~</li>
+</ul>
+<p>Feign，主要是社区版，大家都习惯面向接口编程。这个是很多开发人员的规范。调用微服务访问两种方法：</p>
+<ul>
+<li>微服务名字 【ribbon】</li>
+<li>接口和注解 【feign】</li>
+</ul>
+<h3 id="5-2-Feign能干什么"><a href="#5-2-Feign能干什么" class="headerlink" title="5.2 Feign能干什么"></a>5.2 Feign能干什么</h3><ul>
+<li>Feign旨在使编写Java Http客户端变得更容易；</li>
+<li>前面在使用Ribbon + RestTemplate时，利用RestTemplate对Http请求的封装处理，形成了一套模板化的调用方法。但是在实际开发中，由于对服务依赖的调用可能不止一处，往往一个接口会被多处调用，所以通常都会针对每个微服务自行封装一个客户端类来包装这些依赖服务的调用。所以，<strong>Feign在此基础上做了进一步的封装，由他来帮助我们定义和实现依赖服务接口的定义，在Feign的实现下，我们只需要创建一个接口并使用注解的方式来配置它 (类似以前Dao接口上标注Mapper注解，现在是一个微服务接口上面标注一个Feign注解)，即可完成对服务提供方的接口绑定</strong>，简化了使用Spring Cloud Ribbon 时，自动封装服务调用客户端的开发量。</li>
+<li>Feign默认集成了Ribbon；</li>
+<li>利用Ribbon维护了MicroServiceCloud-Dept的服务列表信息，并且通过轮询实现了客户端的负载均衡，而与Ribbon不同的是，通过Feign只需要定义服务绑定接口且以声明式的方法，优雅而简单的实现了服务调用。</li>
+</ul>
+<p>举例说明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//controller类</span></span><br><span class="line"><span class="comment">//原来，使用Ribbon + RestTemplate</span></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> RestTemplate restTemplate;  <span class="comment">//调用RestTemplate类的对象</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/consumer/dept/add&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">add</span><span class="params">(Dept dept)</span> &#123;</span><br><span class="line">    <span class="comment">// postForObject(服务提供方地址(接口),参数实体,返回类型.class)</span></span><br><span class="line">    <span class="keyword">return</span> restTemplate.postForObject(REST_URL_PREFIX + <span class="string">&quot;/dept/add&quot;</span>, dept, Boolean.class);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//------------------------------------------------</span></span><br><span class="line"><span class="comment">//现在，使用Feign</span></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> DeptClientService deptClientService;  <span class="comment">//调用上一层，即service层</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/consumer/dept/add&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">add</span><span class="params">(Dept dept)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> deptClientService.addDept(dept);  <span class="comment">//只需要在对应要使用的方法（接口）上添加注解即可</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-3-Feign和Ribbon如何选择？"><a href="#5-3-Feign和Ribbon如何选择？" class="headerlink" title="5.3 Feign和Ribbon如何选择？"></a>5.3 Feign和Ribbon如何选择？</h3><ul>
+<li>两种风格罢了，都可以；</li>
+<li><strong>根据个人习惯而定，如果喜欢REST风格使用Ribbon；如果喜欢社区版的面向接口风格使用Feign</strong>；</li>
+<li>Feign 本质上也是实现了 Ribbon，只不过后者是在调用方式上，为了满足一些开发者习惯的接口调用习惯！</li>
+</ul>
+<h2 id="6-Hystrix：服务熔断"><a href="#6-Hystrix：服务熔断" class="headerlink" title="6. Hystrix：服务熔断"></a>6. Hystrix：服务熔断</h2><blockquote>
+<p>分布式系统面临的问题</p>
+</blockquote>
+<p>复杂分布式体系结构中的应用程序有数十个依赖关系，每个依赖关系在某些时候将不可避免失败！</p>
+<h3 id="6-1-服务雪崩"><a href="#6-1-服务雪崩" class="headerlink" title="6.1 服务雪崩"></a>6.1 服务雪崩</h3><ul>
+<li>多个微服务之间调用的时候，假设微服务A调用微服务B和微服务C，微服务B和微服务C又调用其他的微服务，这就是所谓的“扇出”，如果扇出的链路上<strong>某个微服务的调用响应时间过长，或者不可用，对微服务A的调用就会占用越来越多的系统资源</strong>，进而引起系统崩溃，所谓的 “雪崩效应”；</li>
+<li>对于高流量的应用来说，单一的后端依赖可能会导致所有服务器上的所有资源都在几十秒内饱和。比失败更糟糕的是，这些应用程序还可能导致服务之间的延迟增加，备份队列，线程和其他系统资源紧张，导致整个系统发生更多的级联故障，这些都表示需要对故障和延迟进行隔离和管理，以达到<strong>单个依赖关系的失败而不影响整个应用程序或系统运行</strong>;</li>
+<li>我们需要，<strong>弃车保帅</strong>！</li>
+</ul>
+<h3 id="6-2-什么是Hystrix？"><a href="#6-2-什么是Hystrix？" class="headerlink" title="6.2 什么是Hystrix？"></a>6.2 什么是Hystrix？</h3><p>Hystrix是一个应用于处理分布式系统的延迟和容错的开源库，在分布式系统里，许多依赖不可避免的会调用失败，比如超时，异常等，<strong>Hystrix 能够保证在一个依赖出问题的情况下，不会导致整个体系服务失败，避免级联故障，以提高分布式系统的弹性</strong>。</p>
+<p> “断路器”本身是一种开关装置，<strong>当某个服务单元发生故障之后，通过断路器的故障监控 (类似熔断保险丝) ，向调用方返回一个服务预期的，可处理的备选响应 (FallBack) ，而不是长时间的等待或者抛出调用方法无法处理的异常</strong>，这样就可以保证了服务调用方的线程不会被长时间，不必要的占用，从而避免了故障在分布式系统中的蔓延，乃至雪崩。</p>
+<h3 id="6-3-Hystrix能干嘛？"><a href="#6-3-Hystrix能干嘛？" class="headerlink" title="6.3 Hystrix能干嘛？"></a>6.3 Hystrix能干嘛？</h3><ul>
+<li>服务降级</li>
+<li>服务熔断</li>
+<li>服务限流</li>
+<li>接近实时的监控</li>
+</ul>
+<h3 id="6-4-服务熔断"><a href="#6-4-服务熔断" class="headerlink" title="6.4 服务熔断"></a>6.4 服务熔断</h3><ul>
+<li>熔断机制是赌赢雪崩效应的一种微服务链路保护机制。</li>
+<li><strong>当扇出链路的某个微服务不可用或者响应时间太长时，会进行服务的降级，进而熔断该节点微服务的调用，快速返回错误的响应信息。检测到该节点微服务调用响应正常后恢复调用链路。</strong>在SpringCloud框架里熔断机制通过Hystrix实现。Hystrix会监控微服务间调用的状况，当失败的调用到一定阀值缺省是5秒内20次调用失败，就会启动熔断机制。熔断机制的注解是：@HystrixCommand。</li>
+</ul>
+<p>服务熔断解决如下问题：</p>
+<ul>
+<li>当所依赖的对象不稳定时，能够起到快速失败的目的；</li>
+<li>快速失败后，能够根据一定的算法动态试探所依赖对象是否恢复。</li>
+</ul>
+<h3 id="6-5-服务降级"><a href="#6-5-服务降级" class="headerlink" title="6.5 服务降级"></a>6.5 服务降级</h3><p>服务降级是指：</p>
+<ul>
+<li><p>当服务器压力剧增的情况下，根据实际业务情况及流量，对一些服务和页面有策略的不处理，或换种简单的方式处理，从而释放服务器资源以保证核心业务正常运作或高效运作；</p>
+</li>
+<li><p>说白了，就是<strong>尽可能的把系统资源让给优先级高的服务</strong>。</p>
+</li>
+</ul>
+<h3 id="6-6-服务熔断和降级的区别"><a href="#6-6-服务熔断和降级的区别" class="headerlink" title="6.6 服务熔断和降级的区别"></a>6.6 服务熔断和降级的区别</h3><p>服务熔断—&gt;服务端：某个服务超时或异常，引起熔断，类似于保险丝(自我熔断)<br>服务降级—&gt;客户端：从整体网站请求负载考虑，当某个服务熔断或者关闭之后，服务将不再被调用，此时在客户端，我们可以准备一个 FallBackFactory ，返回一个默认的值(缺省值)。会导致整体的服务下降，但是好歹能用，比直接挂掉强。</p>
+<ul>
+<li>触发原因不太一样：<ul>
+<li>服务熔断一般是某个服务（下游服务）故障引起；</li>
+<li>而服务降级一般是从整体负荷考虑；</li>
+</ul>
+</li>
+<li>管理目标的层次不太一样：<ul>
+<li>熔断其实是一个框架级的处理，每个微服务都需要（无层级之分）；</li>
+<li>而降级一般需要对业务有层级之分（比如降级一般是从最外围服务开始）</li>
+</ul>
+</li>
+<li>实现方式不太一样：<ul>
+<li>服务降级具有代码侵入性(由控制器完成&#x2F;或自动降级)；</li>
+<li>熔断一般称为自我熔断</li>
+</ul>
+</li>
+<li>总结一下，出现服务雪崩时，对应的下游服务进行服务熔断慢慢停止掉，同时对该服务进行服务降级，返回i一个缺省的值，交给再下面的服务。不会导致整体性能的崩掉。</li>
+</ul>
+<h2 id="7-Zull路由网关"><a href="#7-Zull路由网关" class="headerlink" title="7. Zull路由网关"></a>7. Zull路由网关</h2><ul>
+<li><p>Zull包含了对请求的路由（用来跳转的）和过滤两个最主要功能：</p>
+<ul>
+<li><p>其中<strong>路由功能负责将外部请求转发到具体的微服务实例上，是实现外部访问统一入口的基础</strong>；</p>
+</li>
+<li><p>而<strong>过滤器功能则负责对请求的处理过程进行干预，是实现请求校验，服务聚合等功能的基础</strong>；</p>
+</li>
+<li><p>Zuul和Eureka进行整合，将Zuul自身注册为Eureka服务治理下的应用，同时从Eureka中获得其他服务的消息，也即以后的访问微服务都是通过Zuul跳转后获得。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>注意</strong>：Zuul 服务最终还是会注册进 Eureka</p>
+<p><strong>提供</strong>：代理 + 路由 + 过滤 三大功能！</p>
+<p><strong>代理功能：</strong></p>
+<p>没有经过Zull路由网关配置时，服务接口访问的路由，可以看出是直接用微服务(服务提供方)名称去访问，这样不安全，不能将微服务名称暴露！</p>
+<p>而经过了网关配置，微服务名称被替换并隐藏，换成了我们自定义的微服务名称mydept，同时加上了前缀haust，这样就做到了对路由fan访问的加密处理！</p>
+<h2 id="8-SpringCloudConfig-分布式配置"><a href="#8-SpringCloudConfig-分布式配置" class="headerlink" title="8. SpringCloudConfig 分布式配置"></a>8. SpringCloudConfig 分布式配置</h2><p><strong>SpringCloudConfig为分布式系统中的外部配置提供服务器和客户端支持，是对所有微服务的一套集中式的配置管理设施</strong>。使用Config Server，您可以在所有环境中管理应用程序的外部属性。客户端和服务器上的概念映射与Spring Environment和PropertySource抽象相同，因此它们与Spring应用程序非常契合，但可以与任何以任何语言运行的应用程序一起使用。</p>
+<h3 id="8-1-分布式系统面临的配置文件问题"><a href="#8-1-分布式系统面临的配置文件问题" class="headerlink" title="8.1 分布式系统面临的配置文件问题"></a>8.1 分布式系统面临的配置文件问题</h3><p>微服务意味着要将单体应用中的业务拆分成一个个子服务，每个服务的粒度相对较小，因此系统中会出现大量的服务，由于每个服务都需要必要的配置信息才能运行，所以<strong>一套集中式的，动态的配置管理设施</strong>是必不可少的。spring cloud提供了configServer来解决这个问题，我们每一个微服务自己带着一个application.yml，那上百个的配置文件修改起来，令人头疼！</p>
+<h3 id="8-2-SpringCloudConfig结构"><a href="#8-2-SpringCloudConfig结构" class="headerlink" title="8.2 SpringCloudConfig结构"></a>8.2 SpringCloudConfig结构</h3><ul>
+<li><strong>SpringCloudConfig 为微服务架构中的微服务提供集中化的外部支持，配置服务器为各个不同微服务应用的所有环节提供了一个中心化的外部配置；</strong></li>
+<li>SpringCloudConfig 分为服务端和客户端两部分：<ul>
+<li>服务端也称为 分布式配置中心，它是一个独立的微服务应用，用来连接配置服务器并为客户端提供获取配置信息，加密，解密信息等访问接口；</li>
+<li>客户端则是通过指定的配置中心来管理应用资源，以及与业务相关的配置内容，并在启动的时候从配置中心获取和加载配置信息。配置服务器默认采用git来存储配置信息，这样就有助于对环境配置进行版本管理。并且可用通过git客户端工具来方便的管理和访问配置内容。</li>
+</ul>
+</li>
+</ul>
+<h3 id="8-3-SpringCloudConfig作用"><a href="#8-3-SpringCloudConfig作用" class="headerlink" title="8.3 SpringCloudConfig作用"></a>8.3 SpringCloudConfig作用</h3><ul>
+<li>集中式管理配置文件；</li>
+<li>不同环境，不同配置，动态化的配置更新，分环境部署，比如 &#x2F;dev &#x2F;test &#x2F;prod &#x2F;beta &#x2F;release；</li>
+<li>运行期间动态调整配置，不再需要在每个服务部署的机器上编写配置文件，服务会向配置中心统一拉取配置自己的信息；</li>
+<li>当配置发生变动时，服务不需要重启，即可感知到配置的变化，并应用新的配置；</li>
+<li>将配置信息以REST接口的形式暴露</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>SpringCloud</p><p><a href="http://example.com/2023/02/24/SpringCloud/">http://example.com/2023/02/24/SpringCloud/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Zehao Tian</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2023-02-24</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2023-02-24</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/SpringCloud/">SpringCloud</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2023/02/24/Redis/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Redis</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2023/02/17/SpringBoot%E4%BA%94/"><span class="level-item">SpringBoot（五）</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="https://octodex.github.com/images/jetpacktocat.png" alt="田泽豪"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">田泽豪</p><p class="is-size-6 is-block">越努力，越幸运</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HUST</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">52</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">20</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zehtian" target="_blank" rel="noopener">关注我</a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#1-微服务概述"><span class="level-left"><span class="level-item">1</span><span class="level-item">1. 微服务概述</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#1-1-什么是微服务？"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">1.1 什么是微服务？</span></span></a></li><li><a class="level is-mobile" href="#1-2-微服务与微服务架构"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">1.2 微服务与微服务架构</span></span></a></li><li><a class="level is-mobile" href="#1-3-微服务优缺点"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">1.3 微服务优缺点</span></span></a></li><li><a class="level is-mobile" href="#1-4-微服务技术栈有那些？"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">1.4 微服务技术栈有那些？</span></span></a></li><li><a class="level is-mobile" href="#1-5-为什么选择SpringCloud作为微服务架构"><span class="level-left"><span class="level-item">1.5</span><span class="level-item">1.5 为什么选择SpringCloud作为微服务架构</span></span></a></li></ul></li><li><a class="level is-mobile" href="#2-SpringCloud入门"><span class="level-left"><span class="level-item">2</span><span class="level-item">2. SpringCloud入门</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#2-1-什么是SpringCloud"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">2.1 什么是SpringCloud</span></span></a></li><li><a class="level is-mobile" href="#2-2-SpringCloud五大组件"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">2.2 SpringCloud五大组件</span></span></a></li><li><a class="level is-mobile" href="#2-3-SpringCloud和SpringBoot的关系"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">2.3 SpringCloud和SpringBoot的关系</span></span></a></li><li><a class="level is-mobile" href="#2-4-Spring-Cloud和Dubbo的关系"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">2.4 Spring Cloud和Dubbo的关系</span></span></a></li><li><a class="level is-mobile" href="#2-5-SpringCloud工程搭建方式"><span class="level-left"><span class="level-item">2.5</span><span class="level-item">2.5 SpringCloud工程搭建方式</span></span></a></li></ul></li><li><a class="level is-mobile" href="#3-Eureka服务中心"><span class="level-left"><span class="level-item">3</span><span class="level-item">3. Eureka服务中心</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#3-1-什么是Eureka"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">3.1 什么是Eureka</span></span></a></li><li><a class="level is-mobile" href="#3-2-Eureka的原理"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">3.2 Eureka的原理</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Eureka基本架构"><span class="level-left"><span class="level-item">3.2.1</span><span class="level-item">Eureka基本架构</span></span></a></li><li><a class="level is-mobile" href="#Eureka组件说明"><span class="level-left"><span class="level-item">3.2.2</span><span class="level-item">Eureka组件说明</span></span></a></li></ul></li><li><a class="level is-mobile" href="#3-3-对比Dubbo"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">3.3 对比Dubbo</span></span></a></li><li><a class="level is-mobile" href="#3-4-Eureka自我保护机制"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">3.4 Eureka自我保护机制</span></span></a></li><li><a class="level is-mobile" href="#3-5-Eureka使用方法"><span class="level-left"><span class="level-item">3.5</span><span class="level-item">3.5 Eureka使用方法</span></span></a></li><li><a class="level is-mobile" href="#3-6-对比ZooKeeper"><span class="level-left"><span class="level-item">3.6</span><span class="level-item">3.6 对比ZooKeeper</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#CAP是什么"><span class="level-left"><span class="level-item">3.6.1</span><span class="level-item">CAP是什么?</span></span></a></li><li><a class="level is-mobile" href="#CAP理论的核心"><span class="level-left"><span class="level-item">3.6.2</span><span class="level-item">CAP理论的核心</span></span></a></li><li><a class="level is-mobile" href="#Eureka和Zookeeper"><span class="level-left"><span class="level-item">3.6.3</span><span class="level-item">Eureka和Zookeeper</span></span></a></li><li><a class="level is-mobile" href="#总结"><span class="level-left"><span class="level-item">3.6.4</span><span class="level-item">总结</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#4-Ribbon：负载均衡-基于客户端"><span class="level-left"><span class="level-item">4</span><span class="level-item">4. Ribbon：负载均衡(基于客户端)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#4-1-负载均衡以及Ribbon"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">4.1 负载均衡以及Ribbon</span></span></a></li><li><a class="level is-mobile" href="#4-2-负载均衡实现流程图"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">4.2 负载均衡实现流程图</span></span></a></li></ul></li><li><a class="level is-mobile" href="#5-Feign：负载均衡-基于服务端"><span class="level-left"><span class="level-item">5</span><span class="level-item">5. Feign：负载均衡(基于服务端)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#5-1-Feign简介"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">5.1 Feign简介</span></span></a></li><li><a class="level is-mobile" href="#5-2-Feign能干什么"><span class="level-left"><span class="level-item">5.2</span><span class="level-item">5.2 Feign能干什么</span></span></a></li><li><a class="level is-mobile" href="#5-3-Feign和Ribbon如何选择？"><span class="level-left"><span class="level-item">5.3</span><span class="level-item">5.3 Feign和Ribbon如何选择？</span></span></a></li></ul></li><li><a class="level is-mobile" href="#6-Hystrix：服务熔断"><span class="level-left"><span class="level-item">6</span><span class="level-item">6. Hystrix：服务熔断</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#6-1-服务雪崩"><span class="level-left"><span class="level-item">6.1</span><span class="level-item">6.1 服务雪崩</span></span></a></li><li><a class="level is-mobile" href="#6-2-什么是Hystrix？"><span class="level-left"><span class="level-item">6.2</span><span class="level-item">6.2 什么是Hystrix？</span></span></a></li><li><a class="level is-mobile" href="#6-3-Hystrix能干嘛？"><span class="level-left"><span class="level-item">6.3</span><span class="level-item">6.3 Hystrix能干嘛？</span></span></a></li><li><a class="level is-mobile" href="#6-4-服务熔断"><span class="level-left"><span class="level-item">6.4</span><span class="level-item">6.4 服务熔断</span></span></a></li><li><a class="level is-mobile" href="#6-5-服务降级"><span class="level-left"><span class="level-item">6.5</span><span class="level-item">6.5 服务降级</span></span></a></li><li><a class="level is-mobile" href="#6-6-服务熔断和降级的区别"><span class="level-left"><span class="level-item">6.6</span><span class="level-item">6.6 服务熔断和降级的区别</span></span></a></li></ul></li><li><a class="level is-mobile" href="#7-Zull路由网关"><span class="level-left"><span class="level-item">7</span><span class="level-item">7. Zull路由网关</span></span></a></li><li><a class="level is-mobile" href="#8-SpringCloudConfig-分布式配置"><span class="level-left"><span class="level-item">8</span><span class="level-item">8. SpringCloudConfig 分布式配置</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#8-1-分布式系统面临的配置文件问题"><span class="level-left"><span class="level-item">8.1</span><span class="level-item">8.1 分布式系统面临的配置文件问题</span></span></a></li><li><a class="level is-mobile" href="#8-2-SpringCloudConfig结构"><span class="level-left"><span class="level-item">8.2</span><span class="level-item">8.2 SpringCloudConfig结构</span></span></a></li><li><a class="level is-mobile" href="#8-3-SpringCloudConfig作用"><span class="level-left"><span class="level-item">8.3</span><span class="level-item">8.3 SpringCloudConfig作用</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://hexo.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Hexo</span></span><span class="level-right"><span class="level-item tag">hexo.io</span></span></a></li><li><a class="level is-mobile" href="https://bulma.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Bulma</span></span><span class="level-right"><span class="level-item tag">bulma.io</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/MyBatis/"><span class="level-start"><span class="level-item">MyBatis</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/MySQL/"><span class="level-start"><span class="level-item">MySQL</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/categories/Redis/"><span class="level-start"><span class="level-item">Redis</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/Spring/"><span class="level-start"><span class="level-item">Spring</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/SpringBoot/"><span class="level-start"><span class="level-item">SpringBoot</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/SpringCloud/"><span class="level-start"><span class="level-item">SpringCloud</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/SpringMVC/"><span class="level-start"><span class="level-item">SpringMVC</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/categories/java/"><span class="level-start"><span class="level-item">java</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li><li><a class="level is-mobile" href="/categories/web%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">web基础</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"><span class="level-start"><span class="level-item">数据结构与算法</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">机器学习</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">编程基础</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="level-start"><span class="level-item">论文写作</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="level-start"><span class="level-item">论文阅读笔记</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-27T12:42:01.000Z">2023-02-27</time></p><p class="title"><a href="/2023/02/27/JVM/">JVM</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-27T12:41:49.000Z">2023-02-27</time></p><p class="title"><a href="/2023/02/27/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></p><p class="categories"><a href="/categories/java/">java</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-24T13:17:51.000Z">2023-02-24</time></p><p class="title"><a href="/2023/02/24/java%E6%96%B9%E6%B3%95/">java方法</a></p><p class="categories"><a href="/categories/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/">编程基础</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-24T13:17:21.000Z">2023-02-24</time></p><p class="title"><a href="/2023/02/24/%E7%AE%97%E6%B3%95/">算法</a></p><p class="categories"><a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-02-24T13:17:13.000Z">2023-02-24</time></p><p class="title"><a href="/2023/02/24/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构基础</a></p><p class="categories"><a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2023/02/"><span class="level-start"><span class="level-item">二月 2023</span></span><span class="level-end"><span class="level-item tag">27</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">15</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/JDBC/"><span class="tag">JDBC</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MyBatis/"><span class="tag">MyBatis</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MySQL/"><span class="tag">MySQL</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Redis/"><span class="tag">Redis</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Spring/"><span class="tag">Spring</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringBoot/"><span class="tag">SpringBoot</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringCloud/"><span class="tag">SpringCloud</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringMVC/"><span class="tag">SpringMVC</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/html/"><span class="tag">html</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/java/"><span class="tag">java</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/jvm/"><span class="tag">jvm</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/python/"><span class="tag">python</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%85%83%E5%AD%A6%E4%B9%A0/"><span class="tag">元学习</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%88%90%E5%91%98%E6%8E%A8%E6%96%AD%E6%94%BB%E5%87%BB/"><span class="tag">成员推断攻击</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"><span class="tag">数据结构与算法</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/"><span class="tag">机器学习基础</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%81%94%E9%82%A6%E5%AD%A6%E4%B9%A0/"><span class="tag">联邦学习</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"><span class="tag">论文写作</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><span class="tag">论文阅读笔记</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="tag">设计模式</span><span class="tag">1</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Blackpride</a><p class="is-size-7"><span>&copy; 2023 Zehao Tian</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
